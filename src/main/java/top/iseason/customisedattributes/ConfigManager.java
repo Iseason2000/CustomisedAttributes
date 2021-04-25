@@ -106,6 +106,8 @@ public class ConfigManager {
         MustHitListener.mustHitOnceTip = mustHitConfig.getString("单次提示");
         MustHitListener.mustHitTimeTip = mustHitConfig.getString("时间提示");
         MustHitListener.mustHitSuccessTip = mustHitConfig.getString("成功提示");
+        MustHitListener.mustHitMap = new HashMap<>();
+        MustHitListener.commandHitMap = new HashMap<>();
         MustHitListener.mustHitSet = new HashSet<>();
         MustHitListener.mustHitTimeSet = new HashSet<>();
     }

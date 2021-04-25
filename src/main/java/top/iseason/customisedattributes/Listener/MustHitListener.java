@@ -1,5 +1,6 @@
 package top.iseason.customisedattributes.Listener;
 
+import Test.GetStatsBonusEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -14,10 +15,13 @@ import org.bukkit.projectiles.ProjectileSource;
 import top.iseason.customisedattributes.ConfigManager;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static Test.StatsEnum.DODGE;
 
 
 /**
@@ -29,16 +33,31 @@ public class MustHitListener implements Listener {
     public static String mustHitOnceTip;
     public static String mustHitTimeTip;
     public static String mustHitSuccessTip;
+    public static HashMap<LivingEntity, Player> mustHitMap;
+    public static HashMap<LivingEntity, Player> commandHitMap;
     public static HashSet<Player> mustHitSet;
     public static HashSet<Player> mustHitTimeSet;
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onEntityDamageByEntityEvent2(EntityDamageByEntityEvent event) {
-        Entity entity = event.getDamager();
-        if (!(entity instanceof Player)) {
+    public void onEntityDamageByEntityEvent1(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        Entity entity = event.getEntity();
+        if (!(entity instanceof LivingEntity)) {
             return;
         }
-        Player player = (Player) entity;
+        Player player;
+        //获取攻击者玩家 不是玩家返回
+        if (damager instanceof Player) {
+            player = (Player) damager;
+        } else if (damager instanceof Projectile) {
+            ProjectileSource projectileSource = ((Projectile) damager).getShooter();
+            if (!(projectileSource instanceof Player)) {
+                return;
+            }
+            player = (Player) projectileSource;
+        } else {
+            return;
+        }
         ItemStack item = player.getEquipment().getItemInHand();
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
@@ -62,18 +81,50 @@ public class MustHitListener implements Listener {
         if (ConfigManager.getDoubleRandom() > percentage / 100) {
             return;
         }//成功触发
+        mustHitMap.put((LivingEntity) entity, player);
         mustHitSet.add(player);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)//设置必中
-    public void onEntityDamageByEntityEvent1(EntityDamageByEntityEvent event) {
-        Entity entity = event.getDamager();
+    @EventHandler//设置必中
+    public void onGetStatsBonusEvent(GetStatsBonusEvent event) {
+        if (event.getStatsEnum() != DODGE) {
+            return;
+        }
+        //被攻击者
+        LivingEntity entity = event.getEntity();
+        if (!(entity instanceof Player)) {
+            return;
+        }
+        //攻击者
+        Player player = mustHitMap.get(entity);
+        if (player == null) {
+            player = commandHitMap.get(entity);
+        }
+        if (mustHitSet.contains(player) || mustHitTimeSet.contains(player)) {
+            mustHitSet.remove(player);
+            event.setValue(0.0);
+            player.sendMessage(ColorTranslator
+                    .toColor(mustHitSuccessTip.replace("[data]", ((Player) entity).getName())));
+        }
+        mustHitMap.remove(entity, player);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)//设置必中
+    public void onEntityDamageByEntityEvent2(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        Entity entity = event.getEntity();
+        if (!(entity instanceof LivingEntity)) {
+            return;
+        }
+        Entity damager = event.getDamager();
         Player player;
         //获取攻击者玩家 不是玩家返回
-        if (entity instanceof Player) {
-            player = (Player) entity;
-        } else if (entity instanceof Projectile) {
-            ProjectileSource projectileSource = ((Projectile) entity).getShooter();
+        if (damager instanceof Player) {
+            player = (Player) damager;
+        } else if (damager instanceof Projectile) {
+            ProjectileSource projectileSource = ((Projectile) damager).getShooter();
             if (!(projectileSource instanceof Player)) {
                 return;
             }
@@ -81,20 +132,10 @@ public class MustHitListener implements Listener {
         } else {
             return;
         }
-        if (!event.isCancelled()) { //判断是否取消
-            mustHitSet.remove(player);
-            return;
-        }
-        Entity entity1 = event.getEntity();//受害者
-        if (!(entity1 instanceof Player)) {
-            return;
-        }
-        Player livingEntity = (Player) entity1;
         if (mustHitSet.contains(player) || mustHitTimeSet.contains(player)) {
-            mustHitSet.remove(player);
-            event.setCancelled(false);
-            player.sendMessage(ColorTranslator
-                    .toColor(mustHitSuccessTip.replace("[data]", livingEntity.getName())));
+            commandHitMap.put((LivingEntity) entity, player);
         }
+
     }
+
 }

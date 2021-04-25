@@ -28,7 +28,7 @@ public class MustHitCommand implements CommandExecutor, TabExecutor {
         if (args.length == 1 && "once".equals(args[0])) {
             MustHitListener.mustHitSet.add(player);
             player.sendMessage(ColorTranslator.toColor(MustHitListener.mustHitOnceTip));
-        } else if (args.length == 2 && "peried".equals(args[0])) {
+        } else if (args.length == 2 && "time".equals(args[0])) {
             String arg = args[1];
             int second = 0;
             try {
@@ -50,7 +50,7 @@ public class MustHitCommand implements CommandExecutor, TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
-            List<String> list = new ArrayList<>(Arrays.asList("once", "peried"));
+            List<String> list = new ArrayList<>(Arrays.asList("once", "time"));
             list.removeIf(s -> !s.startsWith(args[0].toLowerCase()));
             return list;
         } else {

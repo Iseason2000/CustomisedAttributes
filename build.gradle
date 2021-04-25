@@ -3,15 +3,15 @@ plugins {
 }
 
 group 'top.iseason'
-version '1.2'
+version '1.2.2'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile fileTree(dir:'lib',includes:['*jar'])
+    compile fileTree(dir: 'lib', includes: ['*jar'])
 }
-[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 // 插件导出目录
 libsDirName = 'E:\\mc\\spigot-1.7.10\\plugins'
