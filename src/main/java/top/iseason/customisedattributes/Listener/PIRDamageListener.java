@@ -15,7 +15,6 @@ import top.iseason.customisedattributes.Util.ColorTranslator;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,6 +56,7 @@ public class PIRDamageListener implements Listener {
                         chance = Double.parseDouble(matcher.group(1));
                         Matcher matcher2 = iRDPattern.matcher(ColorTranslator.noColor(nextLore));
                         if (!matcher2.find()) {
+                            count++;
                             continue;
                         }
                         percentage = Double.parseDouble(matcher2.group(1));

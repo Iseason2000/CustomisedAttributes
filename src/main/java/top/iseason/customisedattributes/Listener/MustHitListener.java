@@ -16,7 +16,6 @@ import top.iseason.customisedattributes.ConfigManager;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,10 +32,10 @@ public class MustHitListener implements Listener {
     public static String mustHitOnceTip;
     public static String mustHitTimeTip;
     public static String mustHitSuccessTip;
-    public static HashMap<LivingEntity, Player> mustHitMap;
+    public static HashMap<LivingEntity, LivingEntity> entityHitMap;
     public static HashMap<LivingEntity, Player> commandHitMap;
-    public static HashSet<Player> mustHitSet;
-    public static HashSet<Player> mustHitTimeSet;
+    public static HashMap<LivingEntity, ItemStack> mustHitMap;
+    public static HashMap<LivingEntity, ItemStack> mustHitTimeMap;
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDamageByEntityEvent1(EntityDamageByEntityEvent event) {
@@ -45,20 +44,24 @@ public class MustHitListener implements Listener {
         if (!(entity instanceof LivingEntity)) {
             return;
         }
-        Player player;
-        //获取攻击者玩家 不是玩家返回
-        if (damager instanceof Player) {
-            player = (Player) damager;
-        } else if (damager instanceof Projectile) {
+        LivingEntity attacker;
+        if (damager instanceof Projectile) {
             ProjectileSource projectileSource = ((Projectile) damager).getShooter();
-            if (!(projectileSource instanceof Player)) {
+            if (projectileSource instanceof LivingEntity) {
+                attacker = (LivingEntity) projectileSource;
+            } else {
                 return;
             }
-            player = (Player) projectileSource;
+        } else if (damager instanceof LivingEntity) {
+            attacker = (LivingEntity) damager;
         } else {
             return;
         }
-        ItemStack item = player.getEquipment().getItemInHand();
+
+        ItemStack item = attacker.getEquipment().getItemInHand();
+        if (item == null) {
+            return;
+        }
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             return;
@@ -81,32 +84,37 @@ public class MustHitListener implements Listener {
         if (ConfigManager.getDoubleRandom() > percentage / 100) {
             return;
         }//成功触发
-        mustHitMap.put((LivingEntity) entity, player);
-        mustHitSet.add(player);
+        entityHitMap.put((LivingEntity) entity, attacker);
+        mustHitMap.put(attacker, item);
     }
 
     @EventHandler//设置必中
     public void onGetStatsBonusEvent(GetStatsBonusEvent event) {
+        //被攻击者
+        LivingEntity entity = event.getEntity();
+        LivingEntity attacker = entityHitMap.get(entity);
+        entityHitMap.remove(entity);
         if (event.getStatsEnum() != DODGE) {
             return;
         }
-        //被攻击者
-        LivingEntity entity = event.getEntity();
-        if (!(entity instanceof Player)) {
+        //攻击者
+        if (attacker == null) {
+            attacker = commandHitMap.get(entity);
+        }
+        if (attacker == null) {
             return;
         }
-        //攻击者
-        Player player = mustHitMap.get(entity);
-        if (player == null) {
-            player = commandHitMap.get(entity);
-        }
-        if (mustHitSet.contains(player) || mustHitTimeSet.contains(player)) {
-            mustHitSet.remove(player);
+        ItemStack item = attacker.getEquipment().getItemInHand();
+        if ((mustHitMap.containsKey(attacker) && mustHitMap.containsValue(item)) ||
+                (mustHitTimeMap.containsKey(attacker) && mustHitTimeMap.containsValue(item))) {
+            mustHitMap.remove(attacker, item);
             event.setValue(0.0);
-            player.sendMessage(ColorTranslator
-                    .toColor(mustHitSuccessTip.replace("[data]", ((Player) entity).getName())));
+            if (attacker instanceof Player && entity instanceof Player) {
+                ((Player) attacker).sendMessage(ColorTranslator
+                        .toColor(mustHitSuccessTip.replace("[data]", ((Player) entity).getName())));
+            }
         }
-        mustHitMap.remove(entity, player);
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST)//设置必中
@@ -132,7 +140,9 @@ public class MustHitListener implements Listener {
         } else {
             return;
         }
-        if (mustHitSet.contains(player) || mustHitTimeSet.contains(player)) {
+        ItemStack item = player.getEquipment().getItemInHand();
+        if ((mustHitMap.containsKey(player) && mustHitMap.containsValue(item)) ||
+                (mustHitTimeMap.containsKey(player) && mustHitTimeMap.containsValue(item))) {
             commandHitMap.put((LivingEntity) entity, player);
         }
 

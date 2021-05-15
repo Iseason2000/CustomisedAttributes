@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import top.iseason.customisedattributes.Listener.MustHitListener;
 import top.iseason.customisedattributes.Main;
@@ -25,8 +26,9 @@ public class MustHitCommand implements CommandExecutor, TabExecutor {
         if (!sender.isOp()) {
             return true;
         }
+        ItemStack item = player.getEquipment().getItemInHand();
         if (args.length == 1 && "once".equals(args[0])) {
-            MustHitListener.mustHitSet.add(player);
+            MustHitListener.mustHitMap.put(player, item);
             player.sendMessage(ColorTranslator.toColor(MustHitListener.mustHitOnceTip));
         } else if (args.length == 2 && "time".equals(args[0])) {
             String arg = args[1];
@@ -35,11 +37,11 @@ public class MustHitCommand implements CommandExecutor, TabExecutor {
                 second = Integer.parseInt(arg);
             } catch (NumberFormatException ignored) {
             }
-            MustHitListener.mustHitTimeSet.add(player);
+            MustHitListener.mustHitTimeMap.put(player, item);
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    MustHitListener.mustHitTimeSet.remove(player);
+                    MustHitListener.mustHitTimeMap.remove(player, item);
                 }
             }.runTaskLater(Main.getInstance(), second * 20L);
             player.sendMessage(ColorTranslator.toColor(MustHitListener.mustHitTimeTip.replace("[data]", arg)));
