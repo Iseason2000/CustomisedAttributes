@@ -24,7 +24,7 @@ import static top.iseason.customisedattributes.Main.getInstance;
 
 public class ConfigManager {
     private static FileConfiguration config;
-    private static SecureRandom random;
+    public static SecureRandom random;
     private static PercentageDamageListener percentageDamageListener;
     private static PercentageProtectionListener percentageProtectionListener;
     private static PIDamageListener piDamageListener;
@@ -200,7 +200,7 @@ public class ConfigManager {
     }
 
     public static String toPatternString(String string) {
-        return string.replace("[data]", "([0-9.]+)");
+        return string.replace("[data]", "([0-9]+.*-.*[0-9]+|[0-9]+)");
     }
 
     public static Set<String> getBlackList() {

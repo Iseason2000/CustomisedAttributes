@@ -110,8 +110,10 @@ public class MustHitListener implements Listener {
             mustHitMap.remove(attacker, item);
             event.setValue(0.0);
             if (attacker instanceof Player && entity instanceof Player) {
-                ((Player) attacker).sendMessage(ColorTranslator
-                        .toColor(mustHitSuccessTip.replace("[data]", ((Player) entity).getName())));
+                if (mustHitSuccessTip != null && !mustHitSuccessTip.isEmpty()) {
+                    ((Player) attacker).sendMessage(ColorTranslator
+                            .toColor(mustHitSuccessTip.replace("[data]", ((Player) entity).getName())));
+                }
             }
         }
 

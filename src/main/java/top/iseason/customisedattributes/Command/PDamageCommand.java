@@ -34,7 +34,9 @@ public class PDamageCommand implements CommandExecutor, TabExecutor {
                 return true;
             }
             PercentageDamageListener.attackList.put(player, percentage);
-            player.sendMessage(ColorTranslator.toColor(PercentageDamageListener.PDCTip.replace("[data]", String.valueOf(percentage))));
+            if (PercentageDamageListener.PDCTip != null && !PercentageDamageListener.PDCTip.isEmpty()) {
+                player.sendMessage(ColorTranslator.toColor(PercentageDamageListener.PDCTip.replace("[data]", String.valueOf(percentage))));
+            }
             return true;
         } else if ("me".equals(args[0])) {
             Player me = (Player) sender;

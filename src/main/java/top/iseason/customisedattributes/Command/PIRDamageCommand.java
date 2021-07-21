@@ -28,7 +28,9 @@ public class PIRDamageCommand implements CommandExecutor {
         }
         Player player = (Player) sender;
         PIRDamageListener.iRDList.put(player, percentage);
-        player.sendMessage(ColorTranslator.toColor(PIRDamageListener.IRDCTip.replace("[data]", String.valueOf(percentage))));
+        if (PIRDamageListener.IRDCTip != null && !PIRDamageListener.IRDCTip.isEmpty()) {
+            player.sendMessage(ColorTranslator.toColor(PIRDamageListener.IRDCTip.replace("[data]", String.valueOf(percentage))));
+        }
         return true;
     }
 }

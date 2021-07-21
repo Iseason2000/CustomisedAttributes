@@ -44,7 +44,9 @@ public class MustHitCommand implements CommandExecutor, TabExecutor {
                     MustHitListener.mustHitTimeMap.remove(player, item);
                 }
             }.runTaskLater(Main.getInstance(), second * 20L);
-            player.sendMessage(ColorTranslator.toColor(MustHitListener.mustHitTimeTip.replace("[data]", arg)));
+            if (MustHitListener.mustHitTimeTip != null && !MustHitListener.mustHitTimeTip.isEmpty()) {
+                player.sendMessage(ColorTranslator.toColor(MustHitListener.mustHitTimeTip.replace("[data]", arg)));
+            }
         }
         return true;
     }

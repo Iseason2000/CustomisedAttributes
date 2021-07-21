@@ -29,7 +29,9 @@ public class PIDamageCommand implements CommandExecutor {
         }
         Player player = (Player) sender;
         PIDamageListener.iDList.put(player, percentage);
-        player.sendMessage(ColorTranslator.toColor(PIDamageListener.IDCTip.replace("[data]", String.valueOf(percentage))));
+        if (PIDamageListener.IDCTip != null && !PIDamageListener.IDCTip.isEmpty()) {
+            player.sendMessage(ColorTranslator.toColor(PIDamageListener.IDCTip.replace("[data]", String.valueOf(percentage))));
+        }
         return true;
     }
 }

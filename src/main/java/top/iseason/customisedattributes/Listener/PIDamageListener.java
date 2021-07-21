@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
 import top.iseason.customisedattributes.Util.ColorTranslator;
+import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,13 +53,13 @@ public class PIDamageListener implements Listener {
                     Matcher matcher = iDChancePattern.matcher(ColorTranslator.noColor(lore));
                     if (matcher.find()) {
                         String nextLore = loreList.get(count + 1);
-                        chance = Double.parseDouble(matcher.group(1));
+                        chance = PercentageGetter.formatString(matcher.group(1));
                         Matcher matcher2 = iDPattern.matcher(ColorTranslator.noColor(nextLore));
                         if (!matcher2.find()) {
                             count++;
                             continue;
                         }
-                        percentage = Double.parseDouble(matcher2.group(1));
+                        percentage = PercentageGetter.formatString(matcher2.group(1));
                         break;
                     }
                     count++;
@@ -81,7 +82,9 @@ public class PIDamageListener implements Listener {
                 return;
             }
         }
-        damager.sendMessage(ColorTranslator.toColor(IDTip.replace("[data]", String.valueOf(percentage))));
         e.setDamage(e.getDamage() + damager.getHealth() * percentage / 100.0D);
+        if (IDTip != null && !IDTip.isEmpty()) {
+            damager.sendMessage(ColorTranslator.toColor(IDTip.replace("[data]", String.valueOf(percentage))));
+        }
     }
 }

@@ -1,6 +1,6 @@
 name: CustomisedAttributes
 main: top.iseason.customisedattributes.Main
-version: 1.2.4
+version: 1.2.5
 commands:
   percentageA:
     description: 设置下一次攻击必定造成百分比伤害(以目标最大生命为准)，概率为x%

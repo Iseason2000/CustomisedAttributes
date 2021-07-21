@@ -16,7 +16,6 @@ import top.iseason.customisedattributes.Util.ColorTranslator;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,6 +83,8 @@ public class PercentageDamageListener implements Listener {
         double maxHealth = ((LivingEntity) target).getMaxHealth();
         double realDamage = maxHealth * percentage / 100.0D;
         e.setDamage(EntityDamageEvent.DamageModifier.MAGIC, realDamage + e.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
-        damager.sendMessage(ColorTranslator.toColor(PDTip.replace("[data]", String.valueOf(percentage))));
+        if (PDTip != null && !PDTip.isEmpty()) {
+            damager.sendMessage(ColorTranslator.toColor(PDTip.replace("[data]", String.valueOf(percentage))));
+        }
     }
 }

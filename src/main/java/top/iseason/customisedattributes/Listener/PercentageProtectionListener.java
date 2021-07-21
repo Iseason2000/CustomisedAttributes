@@ -56,7 +56,7 @@ public class PercentageProtectionListener implements Listener {
                 percentage += Double.parseDouble(matcher.group(1));
             }
         }
-        if (percentage == 0.0) {
+        if (percentage <= 0.0) {
             return;
         }
         if (percentage >= 100.0) {
