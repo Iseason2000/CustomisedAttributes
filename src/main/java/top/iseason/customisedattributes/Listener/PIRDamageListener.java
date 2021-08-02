@@ -83,9 +83,9 @@ public class PIRDamageListener implements Listener {
                 return;
             }
         }
-        damager.sendMessage(ColorTranslator.toColor(IRDTip.replace("[data]", String.valueOf(percentage))));
+        e.setDamage(EntityDamageEvent.DamageModifier.ARMOR, e.getDamage(EntityDamageEvent.DamageModifier.ARMOR) + damager.getHealth() * percentage / 100.0D);
         if (IRDTip != null && !IRDTip.isEmpty()) {
-            e.setDamage(EntityDamageEvent.DamageModifier.ARMOR, e.getDamage(EntityDamageEvent.DamageModifier.ARMOR) + damager.getHealth() * percentage / 100.0D);
+            damager.sendMessage(ColorTranslator.toColor(IRDTip.replace("[data]", String.valueOf(percentage))));
         }
     }
 }

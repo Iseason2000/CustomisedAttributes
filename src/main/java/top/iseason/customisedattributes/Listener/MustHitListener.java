@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 import top.iseason.customisedattributes.ConfigManager;
 import top.iseason.customisedattributes.Util.ColorTranslator;
+import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -76,7 +77,7 @@ public class MustHitListener implements Listener {
             if (!matcher.find()) {
                 continue;
             }
-            percentage += Double.parseDouble(matcher.group(1));
+            percentage += PercentageGetter.formatString(matcher.group(1));
         }
         if (percentage == 0.0) {
             return;

@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
 import top.iseason.customisedattributes.Util.ColorTranslator;
+import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,8 +56,8 @@ public class PercentageDamageListener implements Listener {
                     if (!matcher.find()) {
                         continue;
                     }
-                    chane = Double.parseDouble(matcher.group(1));
-                    percentage = Double.parseDouble(matcher.group(2));
+                    chane = PercentageGetter.formatString(matcher.group(1));
+                    percentage = PercentageGetter.formatString(matcher.group(2));
                 }
             }
         }
@@ -65,6 +66,7 @@ public class PercentageDamageListener implements Listener {
             skipRandom = true;
             attackList.remove(attacker);
         }
+
         if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow && !skipRandom) {
             return;
         }

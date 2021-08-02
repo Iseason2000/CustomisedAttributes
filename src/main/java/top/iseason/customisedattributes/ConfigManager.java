@@ -17,20 +17,24 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import static top.iseason.customisedattributes.Main.getInstance;
 
 public class ConfigManager {
-    private static FileConfiguration config;
     public static SecureRandom random;
+    private static FileConfiguration config;
+    private static Set<String> blackList;
+
     private static PercentageDamageListener percentageDamageListener;
     private static PercentageProtectionListener percentageProtectionListener;
     private static PIDamageListener piDamageListener;
     private static PIRDamageListener pirDamageListener;
     private static MustHitListener mustHitListener;
-    private static Set<String> blackList;
+    private static ProtectionBreakerListener protectionBreakerListener;
+
 
     public static void reload() {
         getInstance().reloadConfig();
@@ -42,11 +46,12 @@ public class ConfigManager {
         }
         setPercentageDamageConfig();
         setPercentageProtectionConfig();
+        setProtectionBreakerListenerConfig();
         setPIDConfig();
         setPIRDConfig();
         setMustHitConfig();
-        registers();
         readBlackList();
+        Bukkit.getPluginCommand("CustomisedAttributes").setExecutor(new ReloadCommand());
     }
 
     public static Double getDoubleRandom() {
@@ -61,7 +66,8 @@ public class ConfigManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        blackList = yamlConfiguration.getKeys(false);
+        blackList = new HashSet<>();
+        blackList.addAll(yamlConfiguration.getKeys(false));
         Bukkit.getPluginCommand("CustomisedAttributesBlackList").setExecutor(new BlackListCommand());
 
     }
@@ -74,11 +80,22 @@ public class ConfigManager {
         PercentageDamageListener.otherMaxP = percentageAConfig.getDouble("怪物最大百分比");
         PercentageDamageListener.PDCTip = percentageAConfig.getString("命令提示");
         PercentageDamageListener.PDTip = percentageAConfig.getString("攻击提示");
+        registerPercentageDamage();
     }
 
     private static void setPercentageProtectionConfig() {
         ConfigurationSection percentageDConfig = config.getConfigurationSection("百分比减伤");
         PercentageProtectionListener.protectPattern = Pattern.compile(toPatternString(percentageDConfig.getString("关键词")));
+        registerPercentageProtection();
+    }
+
+    private static void setProtectionBreakerListenerConfig() {
+        ConfigurationSection percentageBConfig = config.getConfigurationSection("百分比破伤");
+        ProtectionBreakerListener.keyPattern = Pattern.compile(toPatternString(percentageBConfig.getString("关键词")));
+        ProtectionBreakerListener.effectMessage = percentageBConfig.getString("攻击提示");
+        ProtectionBreakerListener.commandMessage = percentageBConfig.getString("命令提示");
+        ProtectionBreakerListener.pbList = new HashMap<>();
+        registerProtectionBreaker();
     }
 
     private static void setPIDConfig() {
@@ -88,6 +105,7 @@ public class ConfigManager {
         PIDamageListener.iDList = new HashMap<>();
         PIDamageListener.IDTip = pIDamageConfig.getString("触发提示");
         PIDamageListener.IDCTip = pIDamageConfig.getString("命令提示");
+        registerPIDamage();
     }
 
     private static void setPIRDConfig() {
@@ -97,6 +115,7 @@ public class ConfigManager {
         PIRDamageListener.iRDList = new HashMap<>();
         PIRDamageListener.IRDTip = pIRDamageConfig.getString("触发提示");
         PIRDamageListener.IRDCTip = pIRDamageConfig.getString("命令提示");
+        registerPIRDamage();
     }
 
     private static void setMustHitConfig() {
@@ -109,15 +128,9 @@ public class ConfigManager {
         MustHitListener.commandHitMap = new HashMap<>();
         MustHitListener.mustHitMap = new HashMap<>();
         MustHitListener.mustHitTimeMap = new HashMap<>();
-    }
-
-    private static void registers() {
-        registerPercentageProtection();
-        registerPercentageDamage();
-        registerPIDamage();
-        registerPIRDamage();
         registerMustHit();
     }
+
 
     private static void registerPercentageDamage() {
         if (config.getBoolean("百分比伤害.开关")) {
@@ -148,7 +161,22 @@ public class ConfigManager {
             percentageProtectionListener = null;
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_BLUE + "百分比减伤" + ChatColor.RED + "已关闭");
         }
-        Bukkit.getPluginCommand("CustomisedAttributes").setExecutor(new ReloadCommand());
+    }
+
+    private static void registerProtectionBreaker() {
+        if (config.getBoolean("百分比破伤.开关")) {
+            if (protectionBreakerListener == null) {
+                protectionBreakerListener = new ProtectionBreakerListener();
+                Bukkit.getPluginManager().registerEvents(protectionBreakerListener, getInstance());
+                Bukkit.getPluginCommand("protectionBreaker").setExecutor(new ProtectionBreakerCommand());
+            }
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.BLUE + "百分比破伤" + ChatColor.GREEN + "已开启");
+        } else {
+            EntityDamageEvent.getHandlerList().unregister(protectionBreakerListener);
+            protectionBreakerListener = null;
+            Bukkit.getPluginCommand("protectionBreaker").setExecutor(null);
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.BLUE + "百分比破伤" + ChatColor.RED + "已关闭");
+        }
     }
 
     private static void registerPIDamage() {

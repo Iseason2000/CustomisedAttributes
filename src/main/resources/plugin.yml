@@ -1,6 +1,6 @@
 name: CustomisedAttributes
 main: top.iseason.customisedattributes.Main
-version: 1.2.5
+version: 1.2.7
 commands:
   percentageA:
     description: 设置下一次攻击必定造成百分比伤害(以目标最大生命为准)，概率为x%
@@ -9,14 +9,16 @@ commands:
     description: 设置下一次攻击必定造成百分比普通伤害(以自身血量)，概率为x%
     aliases: [pid]
   percentageIRD:
-      description: 设置下一次攻击必定造成百分比真实伤害(以自身血量)，概率为x%
-      aliases: [pird]
+    description: 设置下一次攻击必定造成百分比真实伤害(以自身血量)，概率为x%
+    aliases: [ pird ]
   mustHit:
     description: 设置攻击必中
-    aliases: [mh]
+    aliases: [ mh ]
   CustomisedAttributes:
-    aliases: [CA]
+    aliases: [ CA ]
     description: 重置插件配置
   CustomisedAttributesBlackList:
-    aliases: [cabl]
+    aliases: [ cabl ]
     description: 添加百分比黑名单
+  protectionBreaker:
+    aliases: [ pb ]

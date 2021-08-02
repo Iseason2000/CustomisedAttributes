@@ -2,13 +2,16 @@ package top.iseason.customisedattributes.Listener;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import top.iseason.customisedattributes.Events.PercentageEvent;
 import top.iseason.customisedattributes.Util.ColorTranslator;
+import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +28,7 @@ public class PercentageProtectionListener implements Listener {
     public static Pattern protectPattern;
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void entityDamageEvent(EntityDamageEvent e) {
+    public void entityDamageEvent(EntityDamageByEntityEvent e) {
         if (e.isCancelled()) {
             return;
         }
@@ -53,8 +56,12 @@ public class PercentageProtectionListener implements Listener {
                 if (!matcher.find()) {
                     continue;
                 }
-                percentage += Double.parseDouble(matcher.group(1));
+                percentage += PercentageGetter.formatString(matcher.group(1));
             }
+        }
+        Entity damager = e.getDamager();
+        if (damager instanceof LivingEntity) {
+            percentage = new PercentageEvent((LivingEntity) damager, percentage).getPercentage();
         }
         if (percentage <= 0.0) {
             return;
