@@ -51,7 +51,7 @@ public class ConfigManager {
         setPIRDConfig();
         setMustHitConfig();
         readBlackList();
-        Bukkit.getPluginCommand("CustomisedAttributes").setExecutor(new ReloadCommand());
+
     }
 
     public static Double getDoubleRandom() {

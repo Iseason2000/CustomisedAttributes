@@ -1,18 +1,18 @@
 package top.iseason.customisedattributes.Events;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class PercentageEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    private LivingEntity entity;
+    private Entity entity;
     private double percentage;
     private boolean isCancelled = false;
 
-    public PercentageEvent(LivingEntity entity, double percentage) {
+    public PercentageEvent(Entity entity, double percentage) {
         this.entity = entity;
         this.percentage = percentage;
         Bukkit.getPluginManager().callEvent(this);
@@ -27,7 +27,7 @@ public class PercentageEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public LivingEntity getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 

@@ -2,7 +2,6 @@ package top.iseason.customisedattributes.Listener;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -60,9 +59,8 @@ public class PercentageProtectionListener implements Listener {
             }
         }
         Entity damager = e.getDamager();
-        if (damager instanceof LivingEntity) {
-            percentage = new PercentageEvent((LivingEntity) damager, percentage).getPercentage();
-        }
+        percentage = new PercentageEvent(damager, percentage).getPercentage();
+
         if (percentage <= 0.0) {
             return;
         }

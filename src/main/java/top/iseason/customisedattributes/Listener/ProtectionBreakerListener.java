@@ -1,5 +1,6 @@
 package top.iseason.customisedattributes.Listener;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -26,7 +27,7 @@ public class ProtectionBreakerListener implements Listener {
     @EventHandler
     public void onPercentageEvent(PercentageEvent event) {
         if (event.isCancelled()) return;
-        LivingEntity entity = event.getEntity();
+        Entity entity = event.getEntity();
         boolean isArrow = false;
         if (entity instanceof Projectile && (
                 (Projectile) entity).getShooter() instanceof Player) {
