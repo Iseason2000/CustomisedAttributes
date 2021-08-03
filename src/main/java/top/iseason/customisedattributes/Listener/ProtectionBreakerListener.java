@@ -14,6 +14,7 @@ import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +24,7 @@ public class ProtectionBreakerListener implements Listener {
     public static String effectMessage;
     public static String commandMessage;
     public static HashMap<Player, Double> pbList;
+    public static HashSet<ItemStack> itemSet;
 
     @EventHandler
     public void onPercentageEvent(PercentageEvent event) {
@@ -54,10 +56,11 @@ public class ProtectionBreakerListener implements Listener {
             percentage = PercentageGetter.formatString(matcher.group(2));
             break;
         }
-        if (pbList.containsKey(damager)) {
+        if (pbList.containsKey(damager) && itemSet.contains(itemInHand)) {
             percentage = pbList.get(damager);
             skipRandom = true;
             pbList.remove(damager);
+            itemSet.remove(itemInHand);
         }
 
         if (ConfigManager.getBlackList().contains(itemInHand.getType().toString()) && !isArrow && !skipRandom) {

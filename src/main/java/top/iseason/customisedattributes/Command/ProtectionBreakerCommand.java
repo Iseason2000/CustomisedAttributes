@@ -26,6 +26,7 @@ public class ProtectionBreakerCommand implements CommandExecutor {
             return true;
         }
         ProtectionBreakerListener.pbList.put(player, percentage);
+        ProtectionBreakerListener.itemSet.add(player.getItemInHand());
         if (ProtectionBreakerListener.commandMessage != null && !ProtectionBreakerListener.commandMessage.isEmpty()) {
             player.sendMessage(ColorTranslator.toColor(ProtectionBreakerListener.commandMessage.replace("[data]", String.valueOf(percentage))));
         }

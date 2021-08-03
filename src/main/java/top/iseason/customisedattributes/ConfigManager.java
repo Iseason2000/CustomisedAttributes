@@ -95,6 +95,7 @@ public class ConfigManager {
         ProtectionBreakerListener.effectMessage = percentageBConfig.getString("攻击提示");
         ProtectionBreakerListener.commandMessage = percentageBConfig.getString("命令提示");
         ProtectionBreakerListener.pbList = new HashMap<>();
+        ProtectionBreakerListener.itemSet = new HashSet<>();
         registerProtectionBreaker();
     }
 
