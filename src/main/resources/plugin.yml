@@ -1,7 +1,10 @@
 name: CustomisedAttributes
 main: top.iseason.customisedattributes.Main
-version: 1.2.9
+version: 1.3.0
 commands:
+  CustomisedAttributes:
+    aliases: [ca]
+    description: 重置插件配置
   percentageA:
     description: 设置下一次攻击必定造成百分比伤害(以目标最大生命为准)，概率为x%
     aliases: [strange]
@@ -13,12 +16,12 @@ commands:
     aliases: [ pird ]
   mustHit:
     description: 设置攻击必中
-    aliases: [ mh ]
-  CustomisedAttributes:
-    aliases: [ CA ]
-    description: 重置插件配置
+    aliases: [mh]
   CustomisedAttributesBlackList:
-    aliases: [ cabl ]
+    aliases: [cabl]
     description: 添加百分比黑名单
   protectionBreaker:
-    aliases: [ pb ]
+    aliases: [pb]
+  percentageProtection:
+    aliases: [pp]
+    description: 一定时间内增加百分比减伤

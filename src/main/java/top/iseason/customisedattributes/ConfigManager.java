@@ -86,6 +86,8 @@ public class ConfigManager {
     private static void setPercentageProtectionConfig() {
         ConfigurationSection percentageDConfig = config.getConfigurationSection("百分比减伤");
         PercentageProtectionListener.protectPattern = Pattern.compile(toPatternString(percentageDConfig.getString("关键词")));
+        PercentageProtectionListener.playerMap = new HashMap<>();
+        PercentageProtectionListener.commandMessage = percentageDConfig.getString("命令提示");
         registerPercentageProtection();
     }
 
@@ -154,11 +156,13 @@ public class ConfigManager {
         if (config.getBoolean("百分比减伤.开关")) {
             if (percentageProtectionListener == null) {
                 percentageProtectionListener = new PercentageProtectionListener();
+                Bukkit.getPluginCommand("percentageProtection").setExecutor(new ProtectionCommand());
                 Bukkit.getPluginManager().registerEvents(percentageProtectionListener, getInstance());
             }
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_BLUE + "百分比减伤" + ChatColor.GREEN + "已开启");
         } else {
             EntityDamageEvent.getHandlerList().unregister(percentageProtectionListener);
+            Bukkit.getPluginCommand("percentageProtection").setExecutor(null);
             percentageProtectionListener = null;
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_BLUE + "百分比减伤" + ChatColor.RED + "已关闭");
         }

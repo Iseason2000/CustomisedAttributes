@@ -12,9 +12,7 @@ import top.iseason.customisedattributes.Events.PercentageEvent;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,19 +23,22 @@ import static org.bukkit.event.entity.EntityDamageEvent.DamageModifier.*;
  */
 public class PercentageProtectionListener implements Listener {
     public static Pattern protectPattern;
+    public static HashMap<UUID, Double> playerMap;
+    public static String commandMessage;
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void entityDamageEvent(EntityDamageByEntityEvent e) {
         if (e.isCancelled()) {
             return;
         }
-        Entity player = e.getEntity();
-        if (!(player instanceof Player)) {
+        Entity entity = e.getEntity();
+        if (!(entity instanceof Player)) {
             return;
         }
-        ItemStack[] eq = ((Player) player).getInventory().getArmorContents();
+        Player player = (Player) entity;
+        ItemStack[] eq = player.getInventory().getArmorContents();
         List<ItemStack> eqItem = new ArrayList<>(Arrays.asList(eq));
-        eqItem.add(((Player) player).getItemInHand());
+        eqItem.add(player.getItemInHand());
         double percentage = 0.0;
         for (ItemStack item : eqItem) {
             if (item == null) {
@@ -60,7 +61,8 @@ public class PercentageProtectionListener implements Listener {
         }
         Entity damager = e.getDamager();
         percentage = new PercentageEvent(damager, percentage).getPercentage();
-
+        UUID uniqueId = player.getUniqueId();
+        percentage += playerMap.getOrDefault(uniqueId, 0D);
         if (percentage <= 0.0) {
             return;
         }
