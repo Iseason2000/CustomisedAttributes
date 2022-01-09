@@ -1,6 +1,6 @@
 name: CustomisedAttributes
 main: top.iseason.customisedattributes.Main
-version: 1.3.0
+version: 1.3.1
 commands:
   CustomisedAttributes:
     aliases: [ca]
@@ -16,12 +16,15 @@ commands:
     aliases: [ pird ]
   mustHit:
     description: 设置攻击必中
-    aliases: [mh]
+    aliases: [ mh ]
   CustomisedAttributesBlackList:
-    aliases: [cabl]
+    aliases: [ cabl ]
     description: 添加百分比黑名单
   protectionBreaker:
-    aliases: [pb]
+    aliases: [ pb ]
   percentageProtection:
-    aliases: [pp]
+    aliases: [ pp ]
     description: 一定时间内增加百分比减伤
+  healthModifier:
+    aliases: [ hm ]
+    description: 修改血量

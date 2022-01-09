@@ -1,6 +1,7 @@
 package top.iseason.customisedattributes.Listener;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -27,22 +28,23 @@ public class PIRDamageListener implements Listener {
     public static Pattern iRDPattern;       //真实伤害倍率模板
     public static String IRDTip;            //真 触发提示
     public static String IRDCTip;            //真 命令提示
-    public static HashMap<Player, Double> iRDList; //下次必定增加真实伤害列表
+    public static HashMap<LivingEntity, Double> iRDList; //下次必定增加真实伤害列表
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityDamageByEntityEvent(EntityDamageByEntityEvent e) {
         Entity attacker = e.getDamager();
         boolean isArrow = false;
         if (attacker instanceof Projectile && (
-                (Projectile) attacker).getShooter() instanceof Player) {
+                (Projectile) attacker).getShooter() instanceof LivingEntity) {
             attacker = (Entity) ((Projectile) attacker).getShooter();
             isArrow = true;
         }
-        if (!(attacker instanceof Player)) {
+        if (!(attacker instanceof LivingEntity)) {
             return;
         }
-        Player damager = (Player) attacker;
-        ItemStack handItem = damager.getItemInHand();
+        LivingEntity damager = (LivingEntity) attacker;
+        ItemStack handItem = damager.getEquipment().getItemInHand();
+        if (handItem == null) return;
         double percentage = 0.0D, chance = 0.0D;
         boolean skipRandom = false;
         if (handItem.hasItemMeta()) {
@@ -84,8 +86,8 @@ public class PIRDamageListener implements Listener {
             }
         }
         e.setDamage(EntityDamageEvent.DamageModifier.ARMOR, e.getDamage(EntityDamageEvent.DamageModifier.ARMOR) + damager.getHealth() * percentage / 100.0D);
-        if (IRDTip != null && !IRDTip.isEmpty()) {
-            damager.sendMessage(ColorTranslator.toColor(IRDTip.replace("[data]", String.valueOf(percentage))));
+        if (damager instanceof Player && IRDTip != null && !IRDTip.isEmpty()) {
+            ((Player) damager).sendMessage(ColorTranslator.toColor(IRDTip.replace("[data]", String.valueOf(percentage))));
         }
     }
 }

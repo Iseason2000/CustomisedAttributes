@@ -36,15 +36,16 @@ public class PercentageDamageListener implements Listener {
         Entity attacker = e.getDamager();
         boolean isArrow = false;
         if (attacker instanceof Projectile && (
-                (Projectile) attacker).getShooter() instanceof Player) {
+                (Projectile) attacker).getShooter() instanceof LivingEntity) {
             attacker = (Entity) ((Projectile) attacker).getShooter();
             isArrow = true;
         }
-        if (!(attacker instanceof Player)) {
+        if (!(attacker instanceof LivingEntity)) {
             return;
         }
-        Player damager = (Player) attacker;
-        ItemStack handItem = damager.getItemInHand();
+        LivingEntity damager = (LivingEntity) attacker;
+        ItemStack handItem = damager.getEquipment().getItemInHand();
+        if (handItem == null) return;
         double percentage = 0.0D, chane = 0.0D;
         boolean skipRandom = false;
         if (handItem.hasItemMeta()) {
@@ -85,8 +86,8 @@ public class PercentageDamageListener implements Listener {
         double maxHealth = ((LivingEntity) target).getMaxHealth();
         double realDamage = maxHealth * percentage / 100.0D;
         e.setDamage(EntityDamageEvent.DamageModifier.MAGIC, realDamage + e.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
-        if (PDTip != null && !PDTip.isEmpty()) {
-            damager.sendMessage(ColorTranslator.toColor(PDTip.replace("[data]", String.valueOf(percentage))));
+        if (damager instanceof Player && PDTip != null && !PDTip.isEmpty()) {
+            ((Player) damager).sendMessage(ColorTranslator.toColor(PDTip.replace("[data]", String.valueOf(percentage))));
         }
     }
 }

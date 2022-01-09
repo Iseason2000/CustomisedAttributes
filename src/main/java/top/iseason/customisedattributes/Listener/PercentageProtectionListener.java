@@ -2,7 +2,7 @@ package top.iseason.customisedattributes.Listener;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -32,13 +32,15 @@ public class PercentageProtectionListener implements Listener {
             return;
         }
         Entity entity = e.getEntity();
-        if (!(entity instanceof Player)) {
+        if (!(entity instanceof LivingEntity)) {
             return;
         }
-        Player player = (Player) entity;
-        ItemStack[] eq = player.getInventory().getArmorContents();
+        LivingEntity livingEntity = (LivingEntity) entity;
+        ItemStack[] eq = livingEntity.getEquipment().getArmorContents();
         List<ItemStack> eqItem = new ArrayList<>(Arrays.asList(eq));
-        eqItem.add(player.getItemInHand());
+        ItemStack itemInHand = livingEntity.getEquipment().getItemInHand();
+        if (itemInHand == null) return;
+        eqItem.add(itemInHand);
         double percentage = 0.0;
         for (ItemStack item : eqItem) {
             if (item == null) {
@@ -60,9 +62,9 @@ public class PercentageProtectionListener implements Listener {
             }
         }
         Entity damager = e.getDamager();
-        percentage = new PercentageEvent(damager, percentage).getPercentage();
-        UUID uniqueId = player.getUniqueId();
+        UUID uniqueId = livingEntity.getUniqueId();
         percentage += playerMap.getOrDefault(uniqueId, 0D);
+        percentage = new PercentageEvent(damager, percentage).getPercentage();
         if (percentage <= 0.0) {
             return;
         }

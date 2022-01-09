@@ -23,7 +23,7 @@ public class ProtectionBreakerListener implements Listener {
     public static Pattern keyPattern;
     public static String effectMessage;
     public static String commandMessage;
-    public static HashMap<Player, Double> pbList;
+    public static HashMap<LivingEntity, Double> pbList;
     public static HashSet<ItemStack> itemSet;
 
     @EventHandler
@@ -36,10 +36,10 @@ public class ProtectionBreakerListener implements Listener {
             entity = (LivingEntity) ((Projectile) entity).getShooter();
             isArrow = true;
         }
-        if (!(entity instanceof Player)) {
+        if (!(entity instanceof LivingEntity)) {
             return;
         }
-        Player damager = (Player) entity;
+        LivingEntity damager = (LivingEntity) entity;
         ItemStack itemInHand = damager.getEquipment().getItemInHand();
         if (itemInHand == null || !itemInHand.hasItemMeta()) return;
         ItemMeta itemMeta = itemInHand.getItemMeta();
@@ -72,8 +72,8 @@ public class ProtectionBreakerListener implements Listener {
             }
         }
         event.setPercentage((event.getPercentage() - percentage) <= 0 ? 0 : (event.getPercentage() - percentage));
-        if (effectMessage != null && !effectMessage.isEmpty()) {
-            damager.sendMessage(ColorTranslator.toColor(effectMessage.replace("[data]", String.valueOf(percentage > 100 ? 100 : percentage))));
+        if (damager instanceof Player && effectMessage != null && !effectMessage.isEmpty()) {
+            ((Player) damager).sendMessage(ColorTranslator.toColor(effectMessage.replace("[data]", String.valueOf(percentage > 100 ? 100 : percentage))));
         }
     }
 }

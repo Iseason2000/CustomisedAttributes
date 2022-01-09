@@ -1,6 +1,7 @@
 package top.iseason.customisedattributes.Listener;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -33,15 +34,16 @@ public class PIDamageListener implements Listener {
         Entity attacker = e.getDamager();
         boolean isArrow = false;
         if (attacker instanceof Projectile && (
-                (Projectile) attacker).getShooter() instanceof Player) {
+                (Projectile) attacker).getShooter() instanceof LivingEntity) {
             attacker = (Entity) ((Projectile) attacker).getShooter();
             isArrow = true;
         }
-        if (!(attacker instanceof Player)) {
+        if (!(attacker instanceof LivingEntity)) {
             return;
         }
-        Player damager = (Player) attacker;
-        ItemStack handItem = damager.getItemInHand();
+        LivingEntity damager = (LivingEntity) attacker;
+        ItemStack handItem = damager.getEquipment().getItemInHand();
+        if (handItem == null) return;
         double percentage = 0.0D, chance = 0.0D;
         boolean skipRandom = false;
         if (handItem.hasItemMeta()) {
@@ -83,8 +85,8 @@ public class PIDamageListener implements Listener {
             }
         }
         e.setDamage(e.getDamage() + damager.getHealth() * percentage / 100.0D);
-        if (IDTip != null && !IDTip.isEmpty()) {
-            damager.sendMessage(ColorTranslator.toColor(IDTip.replace("[data]", String.valueOf(percentage))));
+        if (damager instanceof Player && IDTip != null && !IDTip.isEmpty()) {
+            ((Player) damager).sendMessage(ColorTranslator.toColor(IDTip.replace("[data]", String.valueOf(percentage))));
         }
     }
 }

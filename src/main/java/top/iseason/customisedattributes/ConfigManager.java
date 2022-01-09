@@ -34,7 +34,7 @@ public class ConfigManager {
     private static PIRDamageListener pirDamageListener;
     private static MustHitListener mustHitListener;
     private static ProtectionBreakerListener protectionBreakerListener;
-
+    private static HealthListener healthListener;
 
     public static void reload() {
         getInstance().reloadConfig();
@@ -50,6 +50,7 @@ public class ConfigManager {
         setPIDConfig();
         setPIRDConfig();
         setMustHitConfig();
+        setHealthConfig();
         readBlackList();
 
     }
@@ -132,6 +133,20 @@ public class ConfigManager {
         MustHitListener.mustHitMap = new HashMap<>();
         MustHitListener.mustHitTimeMap = new HashMap<>();
         registerMustHit();
+    }
+
+    private static void setHealthConfig() {
+        ConfigurationSection healthConfig = config.getConfigurationSection("血量修改");
+        HealthListener.pattern1 = Pattern.compile(toPatternString(healthConfig.getString("关键词1")).replace("[time]", "(\\d+\\.?/?\\d*%?)"));
+        HealthListener.pattern2 = Pattern.compile(healthConfig.getString("关键词2")
+                .replaceFirst("\\[data]", "([0-9]+.*-.*[0-9]+|[0-9]+)")
+                .replaceFirst("\\[data]", "([0-9]+.*-.*[0-9]%?+|[0-9]+%?)")
+                .replace("[time]", "(\\d+\\.?/?\\d*%?)"));
+        HealthListener.RTip = healthConfig.getString("减血提示");
+        HealthListener.RTip2 = healthConfig.getString("减血提示2");
+        HealthCommand.Tip = healthConfig.getString("下一击提示");
+        HealthListener.attackMap = new HashMap<>();
+        registerCustomHealth();
     }
 
 
@@ -229,6 +244,22 @@ public class ConfigManager {
             mustHitListener = null;
             Bukkit.getPluginCommand("mustHit").setExecutor(null);
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_PURPLE + "必中" + ChatColor.RED + "已关闭");
+        }
+    }
+
+    private static void registerCustomHealth() {
+        if (config.getBoolean("血量修改.开关")) {
+            if (healthListener == null) {
+                healthListener = new HealthListener();
+                Bukkit.getPluginManager().registerEvents(healthListener, getInstance());
+                Bukkit.getPluginCommand("healthModifier").setExecutor(new HealthCommand());
+            }
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_RED + "血量修改" + ChatColor.GREEN + "已开启");
+        } else {
+            EntityDamageEvent.getHandlerList().unregister(healthListener);
+            healthListener = null;
+            Bukkit.getPluginCommand("healthModifier").setExecutor(null);
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_RED + "血量修改" + ChatColor.RED + "已关闭");
         }
     }
 
