@@ -4,10 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.customisedattributes.Command.ReloadCommand;
+import top.iseason.customisedattributes.Util.HealthModifier;
 import top.iseason.customisedattributes.Util.LogSender;
 
 public final class Main extends JavaPlugin {
     private static Main plugin;
+
     @Override
     public void onEnable() {
         plugin = this;
@@ -16,10 +18,12 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginCommand("CustomisedAttributes").setExecutor(new ReloadCommand());
         ConfigManager.reload();
     }
+
     @Override
     public void onDisable() {
         saveDefaultConfig();
-        LogSender.sendLog(ChatColor.RED+"插件已注销!");
+        HealthModifier.Timer.reset();
+        LogSender.sendLog(ChatColor.RED + "插件已注销!");
     }
 
     public static Main getInstance() {

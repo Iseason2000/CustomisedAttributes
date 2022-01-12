@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import top.iseason.customisedattributes.Command.*;
 import top.iseason.customisedattributes.Listener.*;
+import top.iseason.customisedattributes.Util.HealthModifier;
 import top.iseason.customisedattributes.Util.LogSender;
 
 import java.io.File;
@@ -146,6 +147,7 @@ public class ConfigManager {
         HealthListener.RTip2 = healthConfig.getString("减血提示2");
         HealthCommand.Tip = healthConfig.getString("下一击提示");
         HealthListener.attackMap = new HashMap<>();
+        HealthModifier.Timer.reset();
         registerCustomHealth();
     }
 

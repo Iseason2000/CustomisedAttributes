@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
@@ -28,11 +30,12 @@ public class HealthListener implements Listener {
     public static Pattern pattern1;
     public static Pattern pattern2;
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntityEventLore(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) {
             return;
         }
+        if (event.getFinalDamage() == 0.0D) return;
         Entity attacker = event.getDamager();
         LivingEntity damager = null;
         boolean isArrow = false;
@@ -119,13 +122,25 @@ public class HealthListener implements Listener {
         } else {
             h = HealthModifier.toDouble(health);
         }
-        new HealthModifier.Timer(entity, -h, tick);
+        new HealthModifier.Timer(entity, -h, tick).start();
         if (entity instanceof Player) {
             if (RTip != null && !RTip.isEmpty()) {
                 ((Player) entity).sendMessage(ColorTranslator.toColor(RTip.replace("[data]", health).replace("[time]", String.valueOf(tick / 20.0))));
             }
         }
         attackMap.remove(uniqueId);
+    }
 
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        HealthModifier.Timer.remove(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (entity instanceof Player) {
+            HealthModifier.Timer.remove((Player) entity);
+        }
     }
 }

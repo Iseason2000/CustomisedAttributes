@@ -27,7 +27,7 @@ public class PercentageDamageListener implements Listener {
     public static Pattern damagePattern;
     public static String PDCTip;
     public static String PDTip;
-    public static HashMap<Player, Double> attackList;
+    public static HashMap<LivingEntity, Double> attackList;
     public static double playerMaxP;
     public static double otherMaxP;
 
@@ -62,12 +62,11 @@ public class PercentageDamageListener implements Listener {
                 }
             }
         }
-        if (attackList.containsKey(attacker)) {
-            percentage = attackList.get(attacker);
+        if (attackList.containsKey(damager)) {
+            percentage = attackList.get(damager);
             skipRandom = true;
-            attackList.remove(attacker);
+            attackList.remove(damager);
         }
-
         if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow && !skipRandom) {
             return;
         }

@@ -27,7 +27,7 @@ public class PIDamageListener implements Listener {
     public static Pattern iDPattern;        //普通伤害倍率模板
     public static String IDTip;             //普 触发提示
     public static String IDCTip;             //普 命令提示
-    public static HashMap<Player, Double> iDList; //下次必定增加普通伤害列表
+    public static HashMap<LivingEntity, Double> iDList; //下次必定增加普通伤害列表
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityDamageByEntityEvent(EntityDamageByEntityEvent e) {
@@ -71,10 +71,10 @@ public class PIDamageListener implements Listener {
         if (chance != 0.0D && percentage == 0.0D) {
             return;
         }
-        if (iDList.containsKey(attacker)) {
-            percentage = iDList.get(attacker);
+        if (iDList.containsKey(damager)) {
+            percentage = iDList.get(damager);
             skipRandom = true;
-            iDList.remove(attacker);
+            iDList.remove(damager);
         }
         if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow && !skipRandom) {
             return;

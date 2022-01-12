@@ -72,10 +72,10 @@ public class PIRDamageListener implements Listener {
         if (chance != 0.0D && percentage == 0.0D) {
             return;
         }
-        if (iRDList.containsKey(attacker)) {
-            percentage = iRDList.get(attacker);
+        if (iRDList.containsKey(damager)) {
+            percentage = iRDList.get(damager);
             skipRandom = true;
-            iRDList.remove(attacker);
+            iRDList.remove(damager);
         }
         if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow && !skipRandom) {
             return;
