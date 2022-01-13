@@ -49,7 +49,7 @@ public class HealthModifier {
 
     public static class HandItemTimer extends BukkitRunnable {
         public static Pattern lorePattern;
-        public static HashMap<UUID, Double> playerMap;
+        public static HashMap<UUID, Double> playerMap = new HashMap<>();
 
         public static void remove(Player player) {
             UUID uniqueId = player.getUniqueId();
@@ -80,7 +80,6 @@ public class HealthModifier {
                         Matcher matcher = lorePattern.matcher(lore);
                         if (matcher.find()) {
                             hasFind = true;
-                            if (playerMap.containsKey(uniqueId)) continue;
                             String group = matcher.group(1);
                             double num;
                             if (group.contains("%")) {
@@ -88,6 +87,11 @@ public class HealthModifier {
                                 num = HealthModifier.toDouble(replace) / 100.0 * player.getMaxHealth();
                             } else {
                                 num = HealthModifier.toDouble(group);
+                            }
+                            Double aDouble = playerMap.get(uniqueId);
+                            if (aDouble != null) {
+                                if (aDouble == num) continue;
+                                else player.setMaxHealth(player.getMaxHealth() - aDouble);
                             }
                             player.setMaxHealth(player.getMaxHealth() + num);
                             playerMap.put(uniqueId, num);
@@ -105,7 +109,7 @@ public class HealthModifier {
 
     public static class Timer extends BukkitRunnable {
         public static HashMap<UUID, Timer> modifierMap;
-        private final double num;
+        public final double num;
         private final int tick;
         private final LivingEntity entity;
 

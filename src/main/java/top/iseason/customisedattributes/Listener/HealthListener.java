@@ -1,5 +1,7 @@
 package top.iseason.customisedattributes.Listener;
 
+import Test.GetStatsBonusEvent;
+import Test.StatsEnum;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -145,6 +147,21 @@ public class HealthListener implements Listener {
             Player player = (Player) entity;
             HealthModifier.Timer.remove(player);
             HealthModifier.HandItemTimer.remove(player);
+        }
+    }
+
+    //防止血量被重置
+    @EventHandler
+    public void onGetStatsBonusEvent(GetStatsBonusEvent event) {
+        if (event.getStatsEnum() != StatsEnum.HEALTH) return;
+        LivingEntity entity = event.getEntity();
+        HealthModifier.Timer timer = HealthModifier.Timer.modifierMap.get(entity.getUniqueId());
+        if (timer != null) {
+            event.setValue(event.getValue() + timer.num);
+        }
+        Double aDouble = HealthModifier.HandItemTimer.playerMap.get(entity.getUniqueId());
+        if (aDouble != null) {
+            event.setValue(event.getValue() + aDouble);
         }
     }
 }

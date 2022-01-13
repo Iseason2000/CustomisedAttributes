@@ -147,7 +147,6 @@ public class ConfigManager {
         HealthListener.RTip2 = healthConfig.getString("减血提示2");
         HealthCommand.Tip = healthConfig.getString("下一击提示");
         HealthListener.attackMap = new HashMap<>();
-        HealthModifier.HandItemTimer.playerMap = new HashMap<>();
         HealthModifier.Timer.reset();
         registerCustomHealth();
     }
