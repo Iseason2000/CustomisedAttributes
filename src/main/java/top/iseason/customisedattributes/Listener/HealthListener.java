@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
+import top.iseason.customisedattributes.Main;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.HealthModifier;
 import top.iseason.customisedattributes.Util.PercentageGetter;
@@ -27,10 +28,15 @@ public class HealthListener implements Listener {
     public static HashMap<UUID, String[]> attackMap;
     public static String RTip;
     public static String RTip2;
-    public static Pattern pattern1;
-    public static Pattern pattern2;
+    public static Pattern pattern;
+    private static HealthModifier.HandItemTimer timer;
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    public HealthListener() {
+        timer = new HealthModifier.HandItemTimer();
+        timer.runTaskTimerAsynchronously(Main.getInstance(), 0L, 10L);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamageByEntityEventLore(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) {
             return;
@@ -59,7 +65,7 @@ public class HealthListener implements Listener {
         String time = "";
         String time2 = "";
         for (String s : lore) {
-            Matcher matcher = pattern2.matcher(ColorTranslator.noColor(s));
+            Matcher matcher = pattern.matcher(ColorTranslator.noColor(s));
             if (matcher.find()) {
                 //不是百分比
                 chance = PercentageGetter.formatString(matcher.group(1));
@@ -87,7 +93,7 @@ public class HealthListener implements Listener {
     }
 
     //下次攻击生效的目标
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) {
             return;
@@ -116,13 +122,7 @@ public class HealthListener implements Listener {
         String[] strings = attackMap.get(uniqueId);
         String health = strings[0];
         int tick = HealthModifier.toInt(strings[1]);
-        double h;
-        if (health.contains("%")) {
-            h = HealthModifier.toDouble(health.replace("%", "")) / 100 * entity.getMaxHealth();
-        } else {
-            h = HealthModifier.toDouble(health);
-        }
-        new HealthModifier.Timer(entity, -h, tick).start();
+        new HealthModifier.Timer(entity, "-".concat(health), tick).start();
         if (entity instanceof Player) {
             if (RTip != null && !RTip.isEmpty()) {
                 ((Player) entity).sendMessage(ColorTranslator.toColor(RTip.replace("[data]", health).replace("[time]", String.valueOf(tick / 20.0))));
@@ -133,14 +133,18 @@ public class HealthListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        HealthModifier.Timer.remove(event.getPlayer());
+        Player player = event.getPlayer();
+        HealthModifier.Timer.remove(player);
+        HealthModifier.HandItemTimer.remove(player);
     }
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player) {
-            HealthModifier.Timer.remove((Player) entity);
+            Player player = (Player) entity;
+            HealthModifier.Timer.remove(player);
+            HealthModifier.HandItemTimer.remove(player);
         }
     }
 }

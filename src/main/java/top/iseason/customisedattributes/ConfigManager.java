@@ -138,8 +138,8 @@ public class ConfigManager {
 
     private static void setHealthConfig() {
         ConfigurationSection healthConfig = config.getConfigurationSection("血量修改");
-        HealthListener.pattern1 = Pattern.compile(toPatternString(healthConfig.getString("关键词1")).replace("[time]", "(\\d+\\.?/?\\d*%?)"));
-        HealthListener.pattern2 = Pattern.compile(healthConfig.getString("关键词2")
+        HealthModifier.HandItemTimer.lorePattern = Pattern.compile(healthConfig.getString("关键词1").replaceAll("\\[data]", "([0-9]+.*-.*[0-9]%?+|[0-9]+%?)"));
+        HealthListener.pattern = Pattern.compile(healthConfig.getString("关键词2")
                 .replaceFirst("\\[data]", "([0-9]+.*-.*[0-9]+|[0-9]+)")
                 .replaceFirst("\\[data]", "([0-9]+.*-.*[0-9]%?+|[0-9]+%?)")
                 .replace("[time]", "(\\d+\\.?/?\\d*%?)"));
@@ -147,6 +147,7 @@ public class ConfigManager {
         HealthListener.RTip2 = healthConfig.getString("减血提示2");
         HealthCommand.Tip = healthConfig.getString("下一击提示");
         HealthListener.attackMap = new HashMap<>();
+        HealthModifier.HandItemTimer.playerMap = new HashMap<>();
         HealthModifier.Timer.reset();
         registerCustomHealth();
     }

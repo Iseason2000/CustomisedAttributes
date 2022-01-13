@@ -2,11 +2,17 @@ package top.iseason.customisedattributes.Util;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import top.iseason.customisedattributes.Main;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HealthModifier {
     public static void heal(Player player, Double num) {
@@ -41,24 +47,86 @@ public class HealthModifier {
         }
     }
 
+    public static class HandItemTimer extends BukkitRunnable {
+        public static Pattern lorePattern;
+        public static HashMap<UUID, Double> playerMap;
+
+        public static void remove(Player player) {
+            UUID uniqueId = player.getUniqueId();
+            Double aDouble = playerMap.get(player.getUniqueId());
+            if (aDouble != null) {
+                player.setMaxHealth(player.getMaxHealth() - aDouble);
+                playerMap.remove(uniqueId);
+            }
+        }
+
+        @Override
+        public void run() {
+            Collection<? extends Player> onlinePlayers = Main.getInstance().getServer().getOnlinePlayers();
+            onlinePlayers.forEach(player -> {
+                ItemStack itemInHand = player.getItemInHand();
+                boolean hasLore = false;
+                if (itemInHand != null) {
+                    if (itemInHand.hasItemMeta()) {
+                        ItemMeta itemMeta = itemInHand.getItemMeta();
+                        hasLore = itemMeta.hasLore();
+                    }
+                }
+                UUID uniqueId = player.getUniqueId();
+                boolean hasFind = false;
+                if (hasLore) {
+                    List<String> loreList = itemInHand.getItemMeta().getLore();
+                    for (String lore : loreList) {
+                        Matcher matcher = lorePattern.matcher(lore);
+                        if (matcher.find()) {
+                            hasFind = true;
+                            if (playerMap.containsKey(uniqueId)) continue;
+                            String group = matcher.group(1);
+                            double num;
+                            if (group.contains("%")) {
+                                String replace = group.replace("%", "");
+                                num = HealthModifier.toDouble(replace) / 100.0 * player.getMaxHealth();
+                            } else {
+                                num = HealthModifier.toDouble(group);
+                            }
+                            player.setMaxHealth(player.getMaxHealth() + num);
+                            playerMap.put(uniqueId, num);
+                            return;
+                        }
+                    }
+                }
+                if (!hasFind && playerMap.containsKey(uniqueId)) {
+                    player.setMaxHealth(player.getMaxHealth() - playerMap.get(uniqueId));
+                    playerMap.remove(uniqueId);
+                }
+            });
+        }
+    }
+
     public static class Timer extends BukkitRunnable {
         public static HashMap<UUID, Timer> modifierMap;
         private final double num;
         private final int tick;
-        private LivingEntity entity;
+        private final LivingEntity entity;
 
-        public Timer(LivingEntity entity, double num, int tick) {
+        public Timer(LivingEntity entity, String num, int tick) {
             this.entity = entity;
-            this.num = num;
             this.tick = tick;
+            Timer timer = modifierMap.get(entity.getUniqueId());
+            if (timer != null) {
+                timer.run();
+            }
+            if (num.contains("%")) {
+                String replace = num.replace("%", "");
+                this.num = HealthModifier.toDouble(replace) / 100.0 * entity.getMaxHealth();
+            } else {
+                this.num = HealthModifier.toDouble(num);
+            }
         }
 
         public static void reset() {
             if (modifierMap != null) {
-                modifierMap.forEach((K, V) -> {
-                    V.run();
-                    V.cancel();
-                });
+                modifierMap.forEach((K, V) -> V.run());
                 modifierMap.clear();
             }
             modifierMap = new HashMap<>();
@@ -74,10 +142,7 @@ public class HealthModifier {
 
         public void start() {
             UUID uniqueId = entity.getUniqueId();
-            Timer timer = modifierMap.get(uniqueId);
-            if (timer != null) {
-                timer.run();
-            }
+
             double v = entity.getMaxHealth() + num;
             modifierMap.put(uniqueId, this);
             if (v <= 0) {

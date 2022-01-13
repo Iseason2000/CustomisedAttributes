@@ -40,13 +40,7 @@ public class HealthCommand implements CommandExecutor, TabExecutor {
             case "addMaxHealth":
                 if (args.length != 3) return;
                 String arg2 = args[1];
-                if (arg2.contains("%")) {
-                    String replace = arg2.replace("%", "");
-                    double p = HealthModifier.toDouble(replace) / 100.0;
-                    new HealthModifier.Timer(player, player.getMaxHealth() * p, HealthModifier.toInt(args[2])).start();
-                } else {
-                    new HealthModifier.Timer(player, HealthModifier.toDouble(arg2), HealthModifier.toInt(args[2])).start();
-                }
+                new HealthModifier.Timer(player, arg2, HealthModifier.toInt(args[2])).start();
                 break;
             case "reduceMaxHealth":
                 if (args.length != 3) return;
