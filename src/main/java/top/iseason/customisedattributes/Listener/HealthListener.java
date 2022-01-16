@@ -5,23 +5,19 @@ import Test.StatsEnum;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
+import top.iseason.customisedattributes.Events.EntityLoreInHandEvent;
 import top.iseason.customisedattributes.Main;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.HealthModifier;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,34 +35,12 @@ public class HealthListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onEntityDamageByEntityEventLore(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        if (event.getFinalDamage() == 0.0D) return;
-        Entity attacker = event.getDamager();
-        LivingEntity damager = null;
-        boolean isArrow = false;
-        if (attacker instanceof Projectile && (
-                (Projectile) attacker).getShooter() instanceof LivingEntity) {
-            damager = (LivingEntity) ((Projectile) attacker).getShooter();
-            isArrow = true;
-        } else if (attacker instanceof LivingEntity) {
-            damager = (LivingEntity) attacker;
-        }
-        if (damager == null) return;
-        ItemStack itemInHand = damager.getEquipment().getItemInHand();
-        if (itemInHand == null) return;
-        if (!itemInHand.hasItemMeta()) return;
-        if (ConfigManager.getBlackList().contains(itemInHand.getType().toString()) && !isArrow) return;
-        ItemMeta itemMeta = itemInHand.getItemMeta();
-        if (!itemMeta.hasLore()) return;
-        List<String> lore = itemMeta.getLore();
+    public void onEntityLoreInHandEvent1(EntityLoreInHandEvent event) {
         double chance = 0.0;
         String health = "";
         String time = "";
         String time2 = "";
-        for (String s : lore) {
+        for (String s : event.getLore()) {
             Matcher matcher = pattern.matcher(ColorTranslator.noColor(s));
             if (matcher.find()) {
                 //不是百分比
@@ -85,10 +59,11 @@ public class HealthListener implements Listener {
         String[] strings = new String[2];
         strings[0] = health;
         strings[1] = time;
-        UUID uniqueId = damager.getUniqueId();
-        if (damager instanceof Player) {
+        LivingEntity attacker = event.getAttacker();
+        UUID uniqueId = attacker.getUniqueId();
+        if (attacker instanceof Player) {
             if (RTip2 != null && !RTip.isEmpty()) {
-                ((Player) damager).sendMessage(ColorTranslator.toColor(RTip2.replace("[data]", health).replace("[time]", time2)));
+                ((Player) attacker).sendMessage(ColorTranslator.toColor(RTip2.replace("[data]", health).replace("[time]", time2)));
             }
         }
         attackMap.put(uniqueId, strings);
@@ -96,28 +71,10 @@ public class HealthListener implements Listener {
 
     //下次攻击生效的目标
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        Entity attacker = event.getDamager();
-        LivingEntity damager = null;
-        boolean isArrow = false;
-        if (attacker instanceof Projectile && (
-                (Projectile) attacker).getShooter() instanceof LivingEntity) {
-            damager = (LivingEntity) ((Projectile) attacker).getShooter();
-            isArrow = true;
-        } else if (attacker instanceof LivingEntity) {
-            damager = (LivingEntity) attacker;
-        }
-        if (damager == null) return;
-        UUID uniqueId = damager.getUniqueId();
+    public void onEntityLoreInHandEvent2(EntityLoreInHandEvent event) {
+        LivingEntity attacker = event.getAttacker();
+        UUID uniqueId = attacker.getUniqueId();
         if (!attackMap.containsKey(uniqueId)) return;
-        ItemStack itemInHand = damager.getEquipment().getItemInHand();
-        if (itemInHand == null) {
-            return;
-        }
-        if (ConfigManager.getBlackList().contains(itemInHand.getType().toString()) && !isArrow) return;
         Entity entity1 = event.getEntity();
         if (!(entity1 instanceof LivingEntity)) return;
         LivingEntity entity = (LivingEntity) entity1;

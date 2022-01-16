@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
+import top.iseason.customisedattributes.Util.Binder;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
@@ -31,6 +32,7 @@ public class PIDamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityDamageByEntityEvent(EntityDamageByEntityEvent e) {
+        if (e.isCancelled()) return;
         Entity attacker = e.getDamager();
         boolean isArrow = false;
         if (attacker instanceof Projectile && (
@@ -71,10 +73,12 @@ public class PIDamageListener implements Listener {
         if (chance != 0.0D && percentage == 0.0D) {
             return;
         }
+        if (!Binder.checkBind(damager, handItem)) return;
         if (iDList.containsKey(damager)) {
             percentage = iDList.get(damager);
             skipRandom = true;
             iDList.remove(damager);
+            Binder.remove(damager);
         }
         if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow && !skipRandom) {
             return;
@@ -84,7 +88,7 @@ public class PIDamageListener implements Listener {
                 return;
             }
         }
-        e.setDamage(e.getDamage() + damager.getHealth() * percentage / 100.0D);
+        e.setDamage(e.getDamage() + damager.getMaxHealth() * percentage / 100.0D);
         if (damager instanceof Player && IDTip != null && !IDTip.isEmpty()) {
             ((Player) damager).sendMessage(ColorTranslator.toColor(IDTip.replace("[data]", String.valueOf(percentage))));
         }

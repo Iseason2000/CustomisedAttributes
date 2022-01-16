@@ -5,8 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.HandlerList;
 import top.iseason.customisedattributes.Command.*;
 import top.iseason.customisedattributes.Listener.*;
 import top.iseason.customisedattributes.Util.HealthModifier;
@@ -29,15 +28,9 @@ public class ConfigManager {
     private static FileConfiguration config;
     private static Set<String> blackList;
 
-    private static PercentageDamageListener percentageDamageListener;
-    private static PercentageProtectionListener percentageProtectionListener;
-    private static PIDamageListener piDamageListener;
-    private static PIRDamageListener pirDamageListener;
-    private static MustHitListener mustHitListener;
-    private static ProtectionBreakerListener protectionBreakerListener;
-    private static HealthListener healthListener;
-
     public static void reload() {
+        HandlerList.unregisterAll(getInstance());
+        Bukkit.getPluginManager().registerEvents(new EventListener(), getInstance());
         getInstance().reloadConfig();
         config = Main.getInstance().getConfig();
         try {
@@ -52,8 +45,11 @@ public class ConfigManager {
         setPIRDConfig();
         setMustHitConfig();
         setHealthConfig();
+        setDamageRangeConfig();
+        setBleedConfig();
+        setArmourPenetrationConfig();
+        setHealConfig();
         readBlackList();
-
     }
 
     public static Double getDoubleRandom() {
@@ -151,18 +147,12 @@ public class ConfigManager {
         registerCustomHealth();
     }
 
-
     private static void registerPercentageDamage() {
         if (config.getBoolean("百分比伤害.开关")) {
-            if (percentageDamageListener == null) {
-                percentageDamageListener = new PercentageDamageListener();
-                Bukkit.getPluginManager().registerEvents(percentageDamageListener, getInstance());
-                Bukkit.getPluginCommand("percentageA").setExecutor(new PDamageCommand());
-            }
+            Bukkit.getPluginManager().registerEvents(new PercentageDamageListener(), getInstance());
+            Bukkit.getPluginCommand("percentageA").setExecutor(new PDamageCommand());
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.RED + "百分比伤害" + ChatColor.AQUA + "-目标血真伤" + ChatColor.GREEN + "已开启");
         } else {
-            EntityDamageByEntityEvent.getHandlerList().unregister(percentageDamageListener);
-            percentageDamageListener = null;
             Bukkit.getPluginCommand("percentageA").setExecutor(null);
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.RED + "百分比伤害" + ChatColor.RED + "已关闭");
         }
@@ -171,31 +161,21 @@ public class ConfigManager {
 
     private static void registerPercentageProtection() {
         if (config.getBoolean("百分比减伤.开关")) {
-            if (percentageProtectionListener == null) {
-                percentageProtectionListener = new PercentageProtectionListener();
-                Bukkit.getPluginCommand("percentageProtection").setExecutor(new ProtectionCommand());
-                Bukkit.getPluginManager().registerEvents(percentageProtectionListener, getInstance());
-            }
+            Bukkit.getPluginCommand("percentageProtection").setExecutor(new ProtectionCommand());
+            Bukkit.getPluginManager().registerEvents(new PercentageProtectionListener(), getInstance());
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_BLUE + "百分比减伤" + ChatColor.GREEN + "已开启");
         } else {
-            EntityDamageEvent.getHandlerList().unregister(percentageProtectionListener);
             Bukkit.getPluginCommand("percentageProtection").setExecutor(null);
-            percentageProtectionListener = null;
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_BLUE + "百分比减伤" + ChatColor.RED + "已关闭");
         }
     }
 
     private static void registerProtectionBreaker() {
         if (config.getBoolean("百分比破伤.开关")) {
-            if (protectionBreakerListener == null) {
-                protectionBreakerListener = new ProtectionBreakerListener();
-                Bukkit.getPluginManager().registerEvents(protectionBreakerListener, getInstance());
-                Bukkit.getPluginCommand("protectionBreaker").setExecutor(new ProtectionBreakerCommand());
-            }
+            Bukkit.getPluginManager().registerEvents(new ProtectionBreakerListener(), getInstance());
+            Bukkit.getPluginCommand("protectionBreaker").setExecutor(new ProtectionBreakerCommand());
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.BLUE + "百分比破伤" + ChatColor.GREEN + "已开启");
         } else {
-            EntityDamageEvent.getHandlerList().unregister(protectionBreakerListener);
-            protectionBreakerListener = null;
             Bukkit.getPluginCommand("protectionBreaker").setExecutor(null);
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.BLUE + "百分比破伤" + ChatColor.RED + "已关闭");
         }
@@ -203,15 +183,10 @@ public class ConfigManager {
 
     private static void registerPIDamage() {
         if (config.getBoolean("百分比增伤-普通伤害.开关")) {
-            if (piDamageListener == null) {
-                piDamageListener = new PIDamageListener();
-                Bukkit.getPluginManager().registerEvents(piDamageListener, getInstance());
-                Bukkit.getPluginCommand("percentageID").setExecutor(new PIDamageCommand());
-            }
+            Bukkit.getPluginManager().registerEvents(new PIDamageListener(), getInstance());
+            Bukkit.getPluginCommand("percentageID").setExecutor(new PIDamageCommand());
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.LIGHT_PURPLE + "百分比增伤" + ChatColor.BLUE + "-自身血普伤" + ChatColor.GREEN + "已开启");
         } else {
-            EntityDamageEvent.getHandlerList().unregister(piDamageListener);
-            piDamageListener = null;
             Bukkit.getPluginCommand("percentageID").setExecutor(null);
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.LIGHT_PURPLE + "百分比增伤" + ChatColor.BLUE + "-自身血普伤" + ChatColor.RED + "已关闭");
         }
@@ -219,15 +194,10 @@ public class ConfigManager {
 
     private static void registerPIRDamage() {
         if (config.getBoolean("百分比增伤-真实伤害.开关")) {
-            if (pirDamageListener == null) {
-                pirDamageListener = new PIRDamageListener();
-                Bukkit.getPluginManager().registerEvents(pirDamageListener, getInstance());
-                Bukkit.getPluginCommand("percentageIRD").setExecutor(new PIRDamageCommand());
-            }
+            Bukkit.getPluginManager().registerEvents(new PIRDamageListener(), getInstance());
+            Bukkit.getPluginCommand("percentageIRD").setExecutor(new PIRDamageCommand());
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_PURPLE + "百分比增伤" + ChatColor.DARK_AQUA + "-自身血真伤" + ChatColor.GREEN + "已开启");
         } else {
-            EntityDamageEvent.getHandlerList().unregister(pirDamageListener);
-            pirDamageListener = null;
             Bukkit.getPluginCommand("percentageIRD").setExecutor(null);
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_PURPLE + "百分比增伤" + ChatColor.DARK_AQUA + "-自身血真伤" + ChatColor.RED + "已关闭");
         }
@@ -235,15 +205,10 @@ public class ConfigManager {
 
     private static void registerMustHit() {
         if (config.getBoolean("必中.开关")) {
-            if (mustHitListener == null) {
-                mustHitListener = new MustHitListener();
-                Bukkit.getPluginManager().registerEvents(mustHitListener, getInstance());
-                Bukkit.getPluginCommand("mustHit").setExecutor(new MustHitCommand());
-            }
+            Bukkit.getPluginManager().registerEvents(new MustHitListener(), getInstance());
+            Bukkit.getPluginCommand("mustHit").setExecutor(new MustHitCommand());
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_PURPLE + "必中" + ChatColor.GREEN + "已开启");
         } else {
-            EntityDamageEvent.getHandlerList().unregister(mustHitListener);
-            mustHitListener = null;
             Bukkit.getPluginCommand("mustHit").setExecutor(null);
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_PURPLE + "必中" + ChatColor.RED + "已关闭");
         }
@@ -251,22 +216,90 @@ public class ConfigManager {
 
     private static void registerCustomHealth() {
         if (config.getBoolean("血量修改.开关")) {
-            if (healthListener == null) {
-                healthListener = new HealthListener();
-                Bukkit.getPluginManager().registerEvents(healthListener, getInstance());
-                Bukkit.getPluginCommand("healthModifier").setExecutor(new HealthCommand());
-            }
+            Bukkit.getPluginManager().registerEvents(new HealthListener(), getInstance());
+            Bukkit.getPluginCommand("healthModifier").setExecutor(new HealthCommand());
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_RED + "血量修改" + ChatColor.GREEN + "已开启");
         } else {
-            EntityDamageEvent.getHandlerList().unregister(healthListener);
-            healthListener = null;
             Bukkit.getPluginCommand("healthModifier").setExecutor(null);
             LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_RED + "血量修改" + ChatColor.RED + "已关闭");
         }
     }
 
+    private static void setDamageRangeConfig() {
+        ConfigurationSection rangeConfig = config.getConfigurationSection("范围攻击");
+        DamageRangeListener.pattern = Pattern.compile(toPatternString(rangeConfig.getString("关键词").replace("+", "\\+")));
+        registerDamageRange();
+    }
+
+    private static void registerDamageRange() {
+        if (config.getBoolean("范围攻击.开关")) {
+            Bukkit.getPluginManager().registerEvents(new DamageRangeListener(), getInstance());
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.GRAY + "范围伤害" + ChatColor.GREEN + "已开启");
+        } else {
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.GRAY + "范围伤害" + ChatColor.RED + "已关闭");
+        }
+    }
+
+    private static void setBleedConfig() {
+        ConfigurationSection rangeConfig = config.getConfigurationSection("流血");
+        BleedListener.pattern1 = Pattern.compile(toPatternString(rangeConfig.getString("关键词1").replace("+", "\\+")));
+        BleedListener.pattern2 = Pattern.compile(toPatternString(rangeConfig.getString("关键词2")));
+        BleedListener.pattern3 = Pattern.compile(toPatternString(rangeConfig.getString("关键词3")));
+        BleedListener.pattern4 = Pattern.compile(toPatternString(rangeConfig.getString("关键词4")));
+        registerBleed();
+    }
+
+    private static void registerBleed() {
+        if (config.getBoolean("流血.开关")) {
+            Bukkit.getPluginManager().registerEvents(new BleedListener(), getInstance());
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.GOLD + "流血" + ChatColor.GREEN + "已开启");
+        } else {
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.GOLD + "流血" + ChatColor.RED + "已关闭");
+        }
+    }
+
+    private static void setArmourPenetrationConfig() {
+        ConfigurationSection rangeConfig = config.getConfigurationSection("破甲");
+        ArmourPenetrationListener.pattern = Pattern.compile(toPatternString(rangeConfig.getString("关键词")));
+        ArmourPenetrationListener.commandTip = rangeConfig.getString("下一击提示");
+        ArmourPenetrationListener.map = new HashMap<>();
+        registerArmourPenetration();
+    }
+
+    private static void registerArmourPenetration() {
+        if (config.getBoolean("破甲.开关")) {
+            Bukkit.getPluginManager().registerEvents(new ArmourPenetrationListener(), getInstance());
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.WHITE + "破甲" + ChatColor.GREEN + "已开启");
+            Bukkit.getPluginCommand("ArmourPenetration").setExecutor(new ArmourPenetrationCommand());
+        } else {
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.WHITE + "破甲" + ChatColor.RED + "已关闭");
+            Bukkit.getPluginCommand("ArmourPenetration").setExecutor(null);
+        }
+    }
+
+    private static void setHealConfig() {
+        ConfigurationSection healConfig = config.getConfigurationSection("回血");
+        HealListener.tip1 = healConfig.getString("提示");
+        HealListener.tip2 = healConfig.getString("治疗提示");
+        HealListener.pattern = Pattern.compile(toPatternString(healConfig.getString("关键词")));
+        HealListener.map = new HashMap<>();
+        HealListener.coolDown = new HashSet<>();
+        registerHeal();
+    }
+
+    private static void registerHeal() {
+        if (config.getBoolean("回血.开关")) {
+            Bukkit.getPluginManager().registerEvents(new HealListener(), getInstance());
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_AQUA + "治疗" + ChatColor.GREEN + "已开启");
+            Bukkit.getPluginCommand("healths").setExecutor(new HealCommand());
+        } else {
+            LogSender.sendLog(ChatColor.YELLOW + "属性：" + ChatColor.DARK_AQUA + "治疗" + ChatColor.RED + "已关闭");
+            Bukkit.getPluginCommand("healths").setExecutor(null);
+        }
+    }
+
     public static String toPatternString(String string) {
-        return string.replace("[data]", "([0-9]+.*-.*[0-9]+|[0-9]+)");
+        return string.replace("[data]", "([0-9]+[.[0-9]+]?.*-.*[0-9]+[.[0-9]+]?|[0-9]+[.[0-9]+]?)");
     }
 
     public static Set<String> getBlackList() {

@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import top.iseason.customisedattributes.Listener.HealthListener;
+import top.iseason.customisedattributes.Util.Binder;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.HealthModifier;
 
@@ -48,6 +49,7 @@ public class HealthCommand implements CommandExecutor, TabExecutor {
                 data[0] = args[1];
                 data[1] = args[2];
                 HealthListener.attackMap.put(player.getUniqueId(), data);
+                Binder.bind(player, player.getItemInHand());
                 if (Tip != null && !Tip.isEmpty()) {
                     player.sendMessage(ColorTranslator.toColor(Tip.replace("[data]", args[1]).replace("[time]", String.valueOf(HealthModifier.toDouble(args[2]) / 20))));
                 }

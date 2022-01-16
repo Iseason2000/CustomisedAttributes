@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import top.iseason.customisedattributes.Listener.PercentageDamageListener;
+import top.iseason.customisedattributes.Util.Binder;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class PDamageCommand implements CommandExecutor, TabExecutor {
                 return true;
             }
             PercentageDamageListener.attackList.put(player, percentage);
+            Binder.bind(player, player.getItemInHand());
             if (PercentageDamageListener.PDCTip != null && !PercentageDamageListener.PDCTip.isEmpty()) {
                 player.sendMessage(ColorTranslator.toColor(PercentageDamageListener.PDCTip.replace("[data]", String.valueOf(percentage))));
             }

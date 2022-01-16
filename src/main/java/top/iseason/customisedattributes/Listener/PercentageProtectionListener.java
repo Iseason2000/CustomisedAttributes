@@ -35,6 +35,11 @@ public class PercentageProtectionListener implements Listener {
         if (!(entity instanceof LivingEntity)) {
             return;
         }
+//        System.out.println(e.getDamage(ABSORPTION));
+//        System.out.println(e.getDamage(ARMOR));
+//        System.out.println(e.getDamage(BASE));
+//        System.out.println(e.getDamage(BLOCKING));
+//        System.out.println(e.getDamage(MAGIC));
         LivingEntity livingEntity = (LivingEntity) entity;
         ItemStack[] eq = livingEntity.getEquipment().getArmorContents();
         List<ItemStack> eqItem = new ArrayList<>(Arrays.asList(eq));

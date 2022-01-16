@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import top.iseason.customisedattributes.Listener.PIDamageListener;
+import top.iseason.customisedattributes.Util.Binder;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 
 
@@ -29,6 +30,7 @@ public class PIDamageCommand implements CommandExecutor {
         }
         Player player = (Player) sender;
         PIDamageListener.iDList.put(player, percentage);
+        Binder.bind(player, player.getItemInHand());
         if (PIDamageListener.IDCTip != null && !PIDamageListener.IDCTip.isEmpty()) {
             player.sendMessage(ColorTranslator.toColor(PIDamageListener.IDCTip.replace("[data]", String.valueOf(percentage))));
         }

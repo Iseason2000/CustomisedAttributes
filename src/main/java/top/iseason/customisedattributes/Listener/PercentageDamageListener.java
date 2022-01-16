@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
+import top.iseason.customisedattributes.Util.Binder;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
@@ -33,6 +34,7 @@ public class PercentageDamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityDamageByEntityEvent(EntityDamageByEntityEvent e) {
+        if (e.isCancelled()) return;
         Entity attacker = e.getDamager();
         boolean isArrow = false;
         if (attacker instanceof Projectile && (
@@ -62,11 +64,14 @@ public class PercentageDamageListener implements Listener {
                 }
             }
         }
+        if (!Binder.checkBind(damager, handItem)) return;
         if (attackList.containsKey(damager)) {
             percentage = attackList.get(damager);
             skipRandom = true;
             attackList.remove(damager);
+            Binder.remove(damager);
         }
+
         if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow && !skipRandom) {
             return;
         }

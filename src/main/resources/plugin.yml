@@ -3,14 +3,14 @@ main: top.iseason.customisedattributes.Main
 version: 1.4.0
 commands:
   CustomisedAttributes:
-    aliases: [ca]
+    aliases: [ ca ]
     description: 重置插件配置
   percentageA:
     description: 设置下一次攻击必定造成百分比伤害(以目标最大生命为准)，概率为x%
-    aliases: [strange]
+    aliases: [ strange ]
   percentageID:
     description: 设置下一次攻击必定造成百分比普通伤害(以自身血量)，概率为x%
-    aliases: [pid]
+    aliases: [ pid ]
   percentageIRD:
     description: 设置下一次攻击必定造成百分比真实伤害(以自身血量)，概率为x%
     aliases: [ pird ]
@@ -28,3 +28,9 @@ commands:
   healthModifier:
     aliases: [ hm ]
     description: 修改血量
+  ArmourPenetration:
+    aliases: [ ap, ia ]
+    description: 破甲
+  healths:
+    aliases: [ hl ]
+    description: 给别人回血

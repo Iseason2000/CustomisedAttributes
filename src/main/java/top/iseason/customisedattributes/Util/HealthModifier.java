@@ -141,7 +141,6 @@ public class HealthModifier {
             Timer timer = modifierMap.get(uniqueId);
             if (timer == null) return;
             timer.run();
-            timer.cancel();
         }
 
         public void start() {

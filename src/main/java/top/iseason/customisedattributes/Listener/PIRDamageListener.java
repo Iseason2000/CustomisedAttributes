@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
+import top.iseason.customisedattributes.Util.Binder;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
@@ -32,6 +33,7 @@ public class PIRDamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityDamageByEntityEvent(EntityDamageByEntityEvent e) {
+        if (e.isCancelled()) return;
         Entity attacker = e.getDamager();
         boolean isArrow = false;
         if (attacker instanceof Projectile && (
@@ -72,10 +74,12 @@ public class PIRDamageListener implements Listener {
         if (chance != 0.0D && percentage == 0.0D) {
             return;
         }
+        if (!Binder.checkBind(damager, handItem)) return;
         if (iRDList.containsKey(damager)) {
             percentage = iRDList.get(damager);
             skipRandom = true;
             iRDList.remove(damager);
+            Binder.remove(damager);
         }
         if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow && !skipRandom) {
             return;
@@ -85,7 +89,7 @@ public class PIRDamageListener implements Listener {
                 return;
             }
         }
-        e.setDamage(EntityDamageEvent.DamageModifier.ARMOR, e.getDamage(EntityDamageEvent.DamageModifier.ARMOR) + damager.getHealth() * percentage / 100.0D);
+        e.setDamage(EntityDamageEvent.DamageModifier.ARMOR, e.getDamage(EntityDamageEvent.DamageModifier.ARMOR) + damager.getMaxHealth() * percentage / 100.0D);
         if (damager instanceof Player && IRDTip != null && !IRDTip.isEmpty()) {
             ((Player) damager).sendMessage(ColorTranslator.toColor(IRDTip.replace("[data]", String.valueOf(percentage))));
         }

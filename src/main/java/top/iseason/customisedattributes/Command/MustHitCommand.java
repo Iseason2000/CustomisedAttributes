@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import top.iseason.customisedattributes.Listener.MustHitListener;
 import top.iseason.customisedattributes.Main;
+import top.iseason.customisedattributes.Util.Binder;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 
 import java.util.ArrayList;
@@ -42,8 +43,10 @@ public class MustHitCommand implements CommandExecutor, TabExecutor {
                 @Override
                 public void run() {
                     MustHitListener.mustHitTimeMap.remove(player, item);
+                    Binder.remove(player);
                 }
             }.runTaskLater(Main.getInstance(), second * 20L);
+            Binder.bind(player, player.getItemInHand());
             if (MustHitListener.mustHitTimeTip != null && !MustHitListener.mustHitTimeTip.isEmpty()) {
                 player.sendMessage(ColorTranslator.toColor(MustHitListener.mustHitTimeTip.replace("[data]", arg)));
             }
