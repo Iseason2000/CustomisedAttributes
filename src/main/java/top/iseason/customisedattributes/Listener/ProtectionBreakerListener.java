@@ -10,21 +10,24 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
 import top.iseason.customisedattributes.Events.PercentageEvent;
+import top.iseason.customisedattributes.Util.Binder;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.lang.Math.abs;
 
 public class ProtectionBreakerListener implements Listener {
     public static Pattern keyPattern;
     public static String effectMessage;
     public static String commandMessage;
-    public static HashMap<LivingEntity, Double> pbList;
-    public static HashSet<ItemStack> itemSet;
+    public static String commandMessage2;
+    public static HashMap<UUID, Double> pbList;
 
     @EventHandler
     public void onPercentageEvent(PercentageEvent event) {
@@ -56,14 +59,18 @@ public class ProtectionBreakerListener implements Listener {
             percentage = PercentageGetter.formatString(matcher.group(2));
             break;
         }
-        if (pbList.containsKey(damager) && itemSet.contains(itemInHand)) {
-            percentage = pbList.get(damager);
-            skipRandom = true;
-            pbList.remove(damager);
-            itemSet.remove(itemInHand);
-        }
 
-        if (ConfigManager.getBlackList().contains(itemInHand.getType().toString()) && !isArrow && !skipRandom) {
+        UUID uniqueId = damager.getUniqueId();
+        if (pbList.containsKey(uniqueId) && Binder.contains(damager)) {
+            percentage = pbList.get(uniqueId);
+            if (percentage < 0) {
+                pbList.remove(uniqueId);
+                Binder.remove(damager);
+            }
+            percentage = abs(percentage);
+            skipRandom = true;
+        }
+        if (ConfigManager.getBlackList().contains(itemInHand.getType().toString()) && !isArrow) {
             return;
         }
         if (!skipRandom) {

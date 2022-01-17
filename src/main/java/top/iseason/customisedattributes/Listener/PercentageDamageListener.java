@@ -18,8 +18,11 @@ import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.lang.Math.abs;
 
 /**
  * @author Iseason
@@ -27,8 +30,9 @@ import java.util.regex.Pattern;
 public class PercentageDamageListener implements Listener {
     public static Pattern damagePattern;
     public static String PDCTip;
+    public static String PDCTip2;
     public static String PDTip;
-    public static HashMap<LivingEntity, Double> attackList;
+    public static HashMap<UUID, Double> attackList;
     public static double playerMaxP;
     public static double otherMaxP;
 
@@ -65,14 +69,17 @@ public class PercentageDamageListener implements Listener {
             }
         }
         if (!Binder.checkBind(damager, handItem)) return;
-        if (attackList.containsKey(damager)) {
-            percentage = attackList.get(damager);
+        UUID uniqueId = damager.getUniqueId();
+        if (attackList.containsKey(uniqueId)) {
+            percentage = attackList.get(uniqueId);
+            if (percentage < 0) {
+                attackList.remove(uniqueId);
+                Binder.remove(damager);
+            }
             skipRandom = true;
-            attackList.remove(damager);
-            Binder.remove(damager);
+            percentage = abs(percentage);
         }
-
-        if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow && !skipRandom) {
+        if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow) {
             return;
         }
         if (!skipRandom) {

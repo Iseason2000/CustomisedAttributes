@@ -18,8 +18,11 @@ import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.lang.Math.abs;
 
 /**
  * @author Iseason
@@ -29,7 +32,8 @@ public class PIRDamageListener implements Listener {
     public static Pattern iRDPattern;       //真实伤害倍率模板
     public static String IRDTip;            //真 触发提示
     public static String IRDCTip;            //真 命令提示
-    public static HashMap<LivingEntity, Double> iRDList; //下次必定增加真实伤害列表
+    public static String IRDCTip2;            //真 命令提示
+    public static HashMap<UUID, Double> iRDList; //下次必定增加真实伤害列表
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityDamageByEntityEvent(EntityDamageByEntityEvent e) {
@@ -74,14 +78,19 @@ public class PIRDamageListener implements Listener {
         if (chance != 0.0D && percentage == 0.0D) {
             return;
         }
+
         if (!Binder.checkBind(damager, handItem)) return;
-        if (iRDList.containsKey(damager)) {
-            percentage = iRDList.get(damager);
+        UUID uniqueId = damager.getUniqueId();
+        if (iRDList.containsKey(uniqueId)) {
+            percentage = iRDList.get(uniqueId);
+            if (percentage < 0) {
+                iRDList.remove(uniqueId);
+                Binder.remove(damager);
+            }
+            percentage = abs(percentage);
             skipRandom = true;
-            iRDList.remove(damager);
-            Binder.remove(damager);
         }
-        if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow && !skipRandom) {
+        if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow) {
             return;
         }
         if (!skipRandom) {

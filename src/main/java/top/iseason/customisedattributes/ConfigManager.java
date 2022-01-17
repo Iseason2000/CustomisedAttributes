@@ -76,7 +76,8 @@ public class ConfigManager {
         PercentageDamageListener.damagePattern = Pattern.compile(toPatternString(percentageAConfig.getString("关键词")));
         PercentageDamageListener.playerMaxP = percentageAConfig.getDouble("玩家最大百分比");
         PercentageDamageListener.otherMaxP = percentageAConfig.getDouble("怪物最大百分比");
-        PercentageDamageListener.PDCTip = percentageAConfig.getString("命令提示");
+        PercentageDamageListener.PDCTip = percentageAConfig.getString("命令提示1");
+        PercentageDamageListener.PDCTip2 = percentageAConfig.getString("命令提示2");
         PercentageDamageListener.PDTip = percentageAConfig.getString("攻击提示");
         registerPercentageDamage();
     }
@@ -93,9 +94,9 @@ public class ConfigManager {
         ConfigurationSection percentageBConfig = config.getConfigurationSection("百分比破伤");
         ProtectionBreakerListener.keyPattern = Pattern.compile(toPatternString(percentageBConfig.getString("关键词")));
         ProtectionBreakerListener.effectMessage = percentageBConfig.getString("攻击提示");
-        ProtectionBreakerListener.commandMessage = percentageBConfig.getString("命令提示");
+        ProtectionBreakerListener.commandMessage = percentageBConfig.getString("命令提示1");
+        ProtectionBreakerListener.commandMessage2 = percentageBConfig.getString("命令提示2");
         ProtectionBreakerListener.pbList = new HashMap<>();
-        ProtectionBreakerListener.itemSet = new HashSet<>();
         registerProtectionBreaker();
     }
 
@@ -105,7 +106,8 @@ public class ConfigManager {
         PIDamageListener.iDPattern = Pattern.compile(toPatternString(pIDamageConfig.getString("普攻倍率")));
         PIDamageListener.iDList = new HashMap<>();
         PIDamageListener.IDTip = pIDamageConfig.getString("触发提示");
-        PIDamageListener.IDCTip = pIDamageConfig.getString("命令提示");
+        PIDamageListener.IDCTip = pIDamageConfig.getString("命令提示1");
+        PIDamageListener.IDCTip2 = pIDamageConfig.getString("命令提示2");
         registerPIDamage();
     }
 
@@ -115,7 +117,8 @@ public class ConfigManager {
         PIRDamageListener.iRDPattern = Pattern.compile(toPatternString(pIRDamageConfig.getString("真攻倍率")));
         PIRDamageListener.iRDList = new HashMap<>();
         PIRDamageListener.IRDTip = pIRDamageConfig.getString("触发提示");
-        PIRDamageListener.IRDCTip = pIRDamageConfig.getString("命令提示");
+        PIRDamageListener.IRDCTip = pIRDamageConfig.getString("命令提示1");
+        PIRDamageListener.IRDCTip2 = pIRDamageConfig.getString("命令提示2");
         registerPIRDamage();
     }
 

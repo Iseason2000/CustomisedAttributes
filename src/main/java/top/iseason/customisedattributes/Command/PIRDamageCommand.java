@@ -4,9 +4,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import top.iseason.customisedattributes.Listener.PIRDamageListener;
+import top.iseason.customisedattributes.Main;
 import top.iseason.customisedattributes.Util.Binder;
 import top.iseason.customisedattributes.Util.ColorTranslator;
+
+import java.util.UUID;
 
 public class PIRDamageCommand implements CommandExecutor {
     @Override
@@ -17,7 +21,7 @@ public class PIRDamageCommand implements CommandExecutor {
         if (!sender.isOp()) {
             return true;
         }
-        if (args.length != 1) {
+        if (args.length < 1) {
             return true;
         }
         double percentage;
@@ -28,10 +32,33 @@ public class PIRDamageCommand implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        PIRDamageListener.iRDList.put(player, percentage);
+        int time = 0;
+        if (args.length > 1) {
+            try {
+                time = Integer.parseInt(args[1]);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        UUID uniqueId = player.getUniqueId();
         Binder.bind(player, player.getItemInHand());
+        if (time == 0) {
+            //负的表示只有一次
+            PIRDamageListener.iRDList.put(uniqueId, -percentage);
+        } else {
+            PIRDamageListener.iRDList.put(uniqueId, percentage);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    PIRDamageListener.iRDList.remove(uniqueId);
+                    Binder.remove(player);
+                }
+            }.runTaskLaterAsynchronously(Main.getInstance(), time);
+        }
         if (PIRDamageListener.IRDCTip != null && !PIRDamageListener.IRDCTip.isEmpty()) {
-            player.sendMessage(ColorTranslator.toColor(PIRDamageListener.IRDCTip.replace("[data]", String.valueOf(percentage))));
+            if (time == 0)
+                player.sendMessage(ColorTranslator.toColor(PIRDamageListener.IRDCTip.replace("[data]", String.valueOf(percentage))));
+            else
+                player.sendMessage(ColorTranslator.toColor(PIRDamageListener.IRDCTip2.replace("[data]", String.valueOf(percentage)).replace("[time]", String.valueOf(time / 20.0))));
         }
         return true;
     }

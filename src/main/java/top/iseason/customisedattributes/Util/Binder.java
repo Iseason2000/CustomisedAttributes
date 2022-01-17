@@ -30,6 +30,10 @@ public class Binder {
         return itemStack.equals(item);
     }
 
+    public static boolean contains(LivingEntity player) {
+        return itemBinder.containsKey(player);
+    }
+
     public static void remove(LivingEntity player) {
         itemBinder.remove(player);
     }
