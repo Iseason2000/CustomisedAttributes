@@ -77,19 +77,26 @@ public class PercentageProtectionListener implements Listener {
             e.setDamage(ABSORPTION, 0);
             e.setDamage(ARMOR, 0);
             e.setDamage(BASE, 0);
-            e.setDamage(BLOCKING, 0);
+            try {
+                e.setDamage(BLOCKING, 0);
+            } catch (Exception ignored) {
+            }
             e.setDamage(MAGIC, 0);
         } else {
             double damage = e.getFinalDamage(); //获取受到的伤害(集合MAGIC、BLOCKING这些)
             double deDamage = damage * (percentage / 100.0);//计算应减伤害
             //重设伤害参数
             e.setDamage(MAGIC, 0);
-            e.setDamage(BLOCKING, 0);
+            try {
+                e.setDamage(BLOCKING, 0);
+            } catch (Exception ignored) {
+            }
             e.setDamage(RESISTANCE, 0);
             e.setDamage(ARMOR, -deDamage);
             e.setDamage(BASE, damage);
             //最终伤害等于上面全部加起来
         }
+
 
     }
 }

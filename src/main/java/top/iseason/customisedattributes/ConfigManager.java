@@ -140,9 +140,9 @@ public class ConfigManager {
 
         HealthModifier.HandItemTimer.lorePattern = Pattern.compile(healthConfig.getString("KeyWord1").replaceAll("\\[data]", "([0-9]+.*-.*[0-9]%?+|[0-9]+%?)"));
         HealthListener.pattern = Pattern.compile(healthConfig.getString("KeyWord2")
-                .replaceFirst("\\[data]", "([0-9]+.*-.*[0-9]+|[0-9]+)")
-                .replaceFirst("\\[data]", "([0-9]+.*-.*[0-9]%?+|[0-9]+%?)")
-                .replace("[time]", "(\\d+\\.?/?\\d*%?)"));
+                .replaceFirst("\\[data]", "([0-9]+\\.?[0-9]*.*-.*[0-9]+\\.?[0-9]*|[0-9]+\\.?[0-9]*)")
+                .replaceFirst("\\[data]", "([0-9]+\\.?[0-9]*.*-.*[0-9]+\\.?[0-9]*%?|[0-9]+\\.?[0-9]*%?)")
+                .replace("[time]", "(\\d+\\.?/?\\d*)"));
         HealthListener.RTip = healthConfig.getString("Tip1");
         HealthListener.RTip2 = healthConfig.getString("Tip2");
         HealthCommand.Tip = healthConfig.getString("Tip3");
@@ -302,8 +302,8 @@ public class ConfigManager {
         }
     }
 
-    public static String toPatternString(String string) {
-        return string.replace("[data]", "([0-9]+(.[0-9]+)?.*-.*[0-9]+(.[0-9]+)?|[0-9]+(.[0-9]+)?)");
+    public static String toPatternString(String string) {//[0-9]+\.?[0-9]*
+        return string.replace("[data]", "([0-9]+\\.?[0-9]*.*-.*[0-9]+\\.?[0-9]*|[0-9]+\\.?[0-9]*)");
     }
 
     public static Set<String> getBlackList() {
