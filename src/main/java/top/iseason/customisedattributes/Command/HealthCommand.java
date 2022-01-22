@@ -51,7 +51,7 @@ public class HealthCommand implements CommandExecutor, TabExecutor {
                 HealthListener.attackMap.put(player.getUniqueId(), data);
                 Binder.bind(player, player.getItemInHand());
                 if (Tip != null && !Tip.isEmpty()) {
-                    player.sendMessage(ColorTranslator.toColor(Tip.replace("[data]", args[1]).replace("[time]", String.valueOf(HealthModifier.toDouble(args[2]) / 20))));
+                    player.sendMessage(ColorTranslator.toColor(Tip.replace("[data]", args[1]).replace("[time]", String.format("%.0f", HealthModifier.toDouble(args[2]) / 20))));
                 }
                 break;
         }

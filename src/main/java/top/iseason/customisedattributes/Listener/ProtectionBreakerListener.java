@@ -80,7 +80,7 @@ public class ProtectionBreakerListener implements Listener {
         }
         event.setPercentage((event.getPercentage() - percentage) <= 0 ? 0 : (event.getPercentage() - percentage));
         if (damager instanceof Player && effectMessage != null && !effectMessage.isEmpty()) {
-            ((Player) damager).sendMessage(ColorTranslator.toColor(effectMessage.replace("[data]", String.valueOf(percentage > 100 ? 100 : percentage))));
+            ((Player) damager).sendMessage(ColorTranslator.toColor(effectMessage.replace("[data]", String.format("%.0f", percentage > 100 ? 100 : percentage))));
         }
     }
 }

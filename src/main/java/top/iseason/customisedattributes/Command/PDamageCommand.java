@@ -26,7 +26,7 @@ public class PDamageCommand implements CommandExecutor, TabExecutor {
             return true;
         }
         if ("set".equals(args[0])) {
-            if (args.length <= 2) {
+            if (args.length < 2) {
                 return true;
             }
             Player player = (Player) sender;
@@ -37,7 +37,7 @@ public class PDamageCommand implements CommandExecutor, TabExecutor {
                 return true;
             }
             int time = 0;
-            if (args.length > 3) {
+            if (args.length > 2) {
                 try {
                     time = Integer.parseInt(args[2]);
                 } catch (NumberFormatException ignored) {
@@ -60,9 +60,9 @@ public class PDamageCommand implements CommandExecutor, TabExecutor {
             Binder.bind(player, player.getItemInHand());
             if (PercentageDamageListener.PDCTip != null && !PercentageDamageListener.PDCTip.isEmpty()) {
                 if (time == 0)
-                    player.sendMessage(ColorTranslator.toColor(PercentageDamageListener.PDCTip.replace("[data]", String.valueOf(percentage))));
+                    player.sendMessage(ColorTranslator.toColor(PercentageDamageListener.PDCTip.replace("[data]", String.format("%.0f", percentage))));
                 else
-                    player.sendMessage(ColorTranslator.toColor(PercentageDamageListener.PDCTip2.replace("[data]", String.valueOf(percentage)).replace("[time]", String.valueOf(time / 20.0))));
+                    player.sendMessage(ColorTranslator.toColor(PercentageDamageListener.PDCTip2.replace("[data]", String.format("%.0f", percentage)).replace("[time]", String.valueOf(time / 20.0))));
             }
             return true;
         } else if ("me".equals(args[0])) {

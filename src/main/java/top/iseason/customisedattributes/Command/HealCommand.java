@@ -41,7 +41,7 @@ public class HealCommand implements CommandExecutor {
         }.runTaskLaterAsynchronously(Main.getInstance(), new Double(second * 20).longValue());
         Binder.bind(player, player.getItemInHand());
         if (HealListener.tip1 != null && !HealListener.tip1.isEmpty()) {
-            player.sendMessage(ColorTranslator.toColor(HealListener.tip1.replace("[time]", String.valueOf(second)).replace("[data]", String.valueOf(health))));
+            player.sendMessage(ColorTranslator.toColor(HealListener.tip1.replace("[time]", String.valueOf(second)).replace("[data]", String.format("%.0f", health))));
         }
 
     }

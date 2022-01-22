@@ -21,6 +21,7 @@ public class DamageRangeListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityLoreInHandEvent event) {
+        if (event.getDamage() == 0.0D) return;
         LivingEntity attacker = event.getAttacker();
         if (swiping.contains(attacker)) {
             return;

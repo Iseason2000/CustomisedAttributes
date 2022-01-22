@@ -10,22 +10,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ReloadCommand implements CommandExecutor , TabExecutor {
+public class ReloadCommand implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!sender.isOp()) {
             return true;
         }
-        if(args.length != 1) {
+        if (args.length != 1) {
             return true;
         }
-        if(!"reload".equals(args[0])) {
+        if (!"reload".equals(args[0])) {
             return true;
         }
         ConfigManager.reload();
         sender.sendMessage("配置重载成功!");
         return true;
     }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {

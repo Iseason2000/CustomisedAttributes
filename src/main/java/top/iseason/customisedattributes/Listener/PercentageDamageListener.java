@@ -98,7 +98,7 @@ public class PercentageDamageListener implements Listener {
         double realDamage = maxHealth * percentage / 100.0D;
         e.setDamage(EntityDamageEvent.DamageModifier.MAGIC, realDamage + e.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
         if (damager instanceof Player && PDTip != null && !PDTip.isEmpty()) {
-            ((Player) damager).sendMessage(ColorTranslator.toColor(PDTip.replace("[data]", String.valueOf(percentage))));
+            ((Player) damager).sendMessage(ColorTranslator.toColor(PDTip.replace("[data]", String.format("%.0f", percentage))));
         }
     }
 }

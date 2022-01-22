@@ -6,8 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PercentageGetter {
-    static Pattern area = Pattern.compile("[0-9]+[.[0-9]+]?.*-.*[0-9]+[.[0-9]+]?");
-    static Pattern num = Pattern.compile("[0-9]+[.[0-9]+]?");
+    static Pattern area = Pattern.compile("[0-9]+(.[0-9]+)?.*-.*[0-9]+(.[0-9]+)?");
+    static Pattern num = Pattern.compile("[0-9]+(.[0-9]+)?");
 
     public static double formatString(String string) {
         if (string == null || string.isEmpty()) {
@@ -19,7 +19,7 @@ public class PercentageGetter {
             String[] split = string.split("-");
             min = Double.parseDouble(split[0]);
             max = Double.parseDouble(split[1]);
-            int add = ConfigManager.random.nextInt((int) (max - min));
+            double add = ConfigManager.random.nextDouble() * (max - min);
             return min + add;
         }
         Matcher matcher = num.matcher(string);

@@ -5,12 +5,15 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import top.iseason.customisedattributes.ConfigManager;
 import top.iseason.customisedattributes.Events.EntityLoreInHandEvent;
 import top.iseason.customisedattributes.Main;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,9 +22,11 @@ public class BleedListener implements Listener {
     public static Pattern pattern2;
     public static Pattern pattern3;
     public static Pattern pattern4;
+    public static HashMap<UUID, BukkitTask> map = new HashMap<>();
 
     @EventHandler
     public void onEntityLoreInHandEvent(EntityLoreInHandEvent event) {
+        if (event.getDamage() == 0.0D) return;
         List<String> lore = event.getLore();
         double chance = 0.0;
         String damage = "";
@@ -61,22 +66,24 @@ public class BleedListener implements Listener {
         double finalTime = time;
         long p = new Double(period * 20).longValue();
         String finalDamage = damage;
-        new BukkitRunnable() {
+        UUID uniqueId = entity1.getUniqueId();
+        BukkitTask bukkitTask = map.get(uniqueId);
+        if (bukkitTask != null) bukkitTask.cancel();
+        map.put(uniqueId, new BukkitRunnable() {
             final long endTime = System.currentTimeMillis() + new Double(finalTime * 1000).longValue();
 
             @Override
             public void run() {
                 if (System.currentTimeMillis() >= endTime || entity1.isDead()) {
                     cancel();
+                    map.remove(uniqueId);
                     return;
                 }
                 double v = PercentageGetter.formatString(finalDamage);
-                if (entity1.getHealth() - v <= 1.0) {
-                    entity1.damage(0);
-                    entity1.setHealth(1.0);
-                } else
-                    entity1.damage(PercentageGetter.formatString(finalDamage));
+                double h = entity1.getHealth() - v;
+                entity1.setHealth(Math.max(h, 1.0));
+                entity1.damage(0);
             }
-        }.runTaskTimerAsynchronously(Main.getInstance(), p, p);
+        }.runTaskTimerAsynchronously(Main.getInstance(), p, p));
     }
 }

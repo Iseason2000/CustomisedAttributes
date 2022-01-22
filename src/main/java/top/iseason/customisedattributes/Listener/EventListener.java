@@ -11,16 +11,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import top.iseason.customisedattributes.ConfigManager;
 import top.iseason.customisedattributes.Events.EntityLoreInHandEvent;
+import top.iseason.customisedattributes.Util.ColorTranslator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventListener implements Listener {
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        if (event.getFinalDamage() == 0.0D) return;
         Entity attacker = event.getDamager();
         LivingEntity damager = null;
         boolean isArrow = false;
@@ -38,7 +36,10 @@ public class EventListener implements Listener {
         if (ConfigManager.getBlackList().contains(itemInHand.getType().toString()) && !isArrow) return;
         ItemMeta itemMeta = itemInHand.getItemMeta();
         if (!itemMeta.hasLore()) return;
-        List<String> lore = itemMeta.getLore();
+        List<String> lore = new ArrayList<>();
+        for (String s : itemMeta.getLore()) {
+            lore.add(ColorTranslator.noColor(s));
+        }
         new EntityLoreInHandEvent(damager, event.getEntity(), itemInHand, lore, event.getDamage(), event);
     }
 }

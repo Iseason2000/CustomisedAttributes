@@ -33,6 +33,7 @@ public class HealListener implements Listener {
 
     @EventHandler
     public void onEntityLoreInHandEvent(EntityLoreInHandEvent event) {
+        if (event.getDamage() == 0.0D) return;
         List<String> lore = event.getLore();
         double chance = 0.0;
         double health = 0.0;
@@ -58,7 +59,7 @@ public class HealListener implements Listener {
         }.runTaskAsynchronously(Main.getInstance());
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) return;
         Entity attacker = event.getDamager();
@@ -77,14 +78,14 @@ public class HealListener implements Listener {
         if (ConfigManager.getBlackList().contains(handItem.getType().toString()) && !isArrow) return;
         UUID uniqueId = attacker.getUniqueId();
         if (coolDown.contains(uniqueId)) return;
-        if (!map.containsKey(uniqueId)) return;
-        if (!Binder.checkBind(damager, handItem)) return;
-        Double health = map.get(uniqueId);
         Entity entity1 = event.getEntity();
         if (!(entity1 instanceof LivingEntity)) return;
         LivingEntity entity = (LivingEntity) entity1;
+        if (!Binder.checkBind(damager, handItem)) return;
+        if (!map.containsKey(uniqueId)) return;
+        Double health = map.get(uniqueId);
         double maxHealth = entity.getMaxHealth();
-        double h = maxHealth + health;
+        double h = entity.getHealth() + health;
         if (h > maxHealth) h = maxHealth;
         entity.setHealth(h);
         event.setCancelled(true);
@@ -97,7 +98,7 @@ public class HealListener implements Listener {
         }.runTaskLaterAsynchronously(Main.getInstance(), 7L);
         if (entity instanceof Player && damager instanceof Player) {
             if (tip2 != null && !tip2.isEmpty()) {
-                ((Player) entity).sendMessage(ColorTranslator.toColor(tip2.replace("[player]", ((Player) damager).getName()).replace("[data]", String.valueOf(health))));
+                ((Player) entity).sendMessage(ColorTranslator.toColor(tip2.replace("[player]", ((Player) damager).getName()).replace("[data]", String.format("%.0f", health))));
 
             }
         }

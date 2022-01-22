@@ -28,6 +28,7 @@ public class ArmourPenetrationListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityLoreInHandEvent(EntityLoreInHandEvent event) {
+        if (event.getDamage() == 0.0D) return;
         UUID uniqueId = event.getAttacker().getUniqueId();
         if (map.containsKey(uniqueId)) return;
         double percent = 0.0;
@@ -49,7 +50,7 @@ public class ArmourPenetrationListener implements Listener {
         }.runTaskAsynchronously(Main.getInstance());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) {
             return;

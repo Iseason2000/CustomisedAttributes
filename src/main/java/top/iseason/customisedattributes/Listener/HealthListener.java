@@ -36,6 +36,7 @@ public class HealthListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityLoreInHandEvent1(EntityLoreInHandEvent event) {
+
         double chance = 0.0;
         String health = "";
         String time = "";
@@ -46,7 +47,7 @@ public class HealthListener implements Listener {
                 //不是百分比
                 chance = PercentageGetter.formatString(matcher.group(1));
                 String heal = matcher.group(2);
-                health = String.valueOf(PercentageGetter.formatString(heal));
+                health = String.format("%.2f", PercentageGetter.formatString(heal.replace("%", "")));
                 if (heal.contains("%")) health = health.concat("%");
                 time = String.valueOf((int) (HealthModifier.toDouble(matcher.group(3)) * 20));
                 time2 = matcher.group(3);

@@ -3,14 +3,14 @@ plugins {
 }
 
 group 'top.iseason'
-version '1.4.3'
+version '1.4.8'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile fileTree(dir: 'lib', includes: ['*jar'])
+    compileOnly fileTree(dir: 'lib', includes: ['*jar'])
 }
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 // 插件导出目录

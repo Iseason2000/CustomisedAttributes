@@ -53,7 +53,6 @@ public class MustHitListener implements Listener {
         if (ConfigManager.getDoubleRandom() > percentage / 100) {
             return;
         }//成功触发
-
         LivingEntity attacker = event.getAttacker();
         entityHitMap.put((LivingEntity) entity, attacker);
         mustHitMap.put(attacker, event.getItemInHand());

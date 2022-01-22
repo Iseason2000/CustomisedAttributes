@@ -99,7 +99,7 @@ public class PIDamageListener implements Listener {
         }
         e.setDamage(e.getDamage() + damager.getMaxHealth() * percentage / 100.0D);
         if (damager instanceof Player && IDTip != null && !IDTip.isEmpty()) {
-            ((Player) damager).sendMessage(ColorTranslator.toColor(IDTip.replace("[data]", String.valueOf(percentage))));
+            ((Player) damager).sendMessage(ColorTranslator.toColor(IDTip.replace("[data]", String.format("%.0f", percentage))));
         }
     }
 }

@@ -44,7 +44,7 @@ public class ProtectionCommand implements CommandExecutor {
         if (PercentageProtectionListener.commandMessage != null && !PercentageProtectionListener.commandMessage.isEmpty()) {
             player.sendMessage(ColorTranslator.toColor(
                     PercentageProtectionListener.commandMessage.replace("[second]", String.valueOf(second))
-                            .replace("[data]", String.valueOf(percentage))));
+                            .replace("[data]", String.format("%.0f", percentage))));
         }
         return true;
     }

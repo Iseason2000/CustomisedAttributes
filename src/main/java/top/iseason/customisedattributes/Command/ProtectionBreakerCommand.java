@@ -54,9 +54,9 @@ public class ProtectionBreakerCommand implements CommandExecutor {
         }
         if (ProtectionBreakerListener.commandMessage != null && !ProtectionBreakerListener.commandMessage.isEmpty()) {
             if (time == 0)
-                player.sendMessage(ColorTranslator.toColor(ProtectionBreakerListener.commandMessage.replace("[data]", String.valueOf(percentage))));
+                player.sendMessage(ColorTranslator.toColor(ProtectionBreakerListener.commandMessage.replace("[data]", String.format("%.0f", percentage))));
             else
-                player.sendMessage(ColorTranslator.toColor(ProtectionBreakerListener.commandMessage2.replace("[data]", String.valueOf(percentage)).replace("[time]", String.valueOf(time / 20.0))));
+                player.sendMessage(ColorTranslator.toColor(ProtectionBreakerListener.commandMessage2.replace("[data]", String.format("%.0f", percentage)).replace("[time]", String.valueOf(time / 20.0))));
 
         }
         return true;

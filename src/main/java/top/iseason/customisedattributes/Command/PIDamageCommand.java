@@ -57,9 +57,9 @@ public class PIDamageCommand implements CommandExecutor {
         }
         if (PIDamageListener.IDCTip != null && !PIDamageListener.IDCTip.isEmpty()) {
             if (time == 0)
-                player.sendMessage(ColorTranslator.toColor(PIDamageListener.IDCTip.replace("[data]", String.valueOf(percentage))));
+                player.sendMessage(ColorTranslator.toColor(PIDamageListener.IDCTip.replace("[data]", String.format("%.0f", percentage))));
             else
-                player.sendMessage(ColorTranslator.toColor(PIDamageListener.IDCTip2.replace("[data]", String.valueOf(percentage)).replace("[time]", String.valueOf(time / 20.0))));
+                player.sendMessage(ColorTranslator.toColor(PIDamageListener.IDCTip2.replace("[data]", String.format("%.0f", percentage)).replace("[time]", String.valueOf(time / 20.0))));
         }
         return true;
     }

@@ -100,7 +100,7 @@ public class PIRDamageListener implements Listener {
         }
         e.setDamage(EntityDamageEvent.DamageModifier.ARMOR, e.getDamage(EntityDamageEvent.DamageModifier.ARMOR) + damager.getMaxHealth() * percentage / 100.0D);
         if (damager instanceof Player && IRDTip != null && !IRDTip.isEmpty()) {
-            ((Player) damager).sendMessage(ColorTranslator.toColor(IRDTip.replace("[data]", String.valueOf(percentage))));
+            ((Player) damager).sendMessage(ColorTranslator.toColor(IRDTip.replace("[data]", String.format("%.0f", percentage))));
         }
     }
 }
