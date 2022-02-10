@@ -1,6 +1,5 @@
 package top.iseason.customisedattributes.Events;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
@@ -28,7 +27,7 @@ public class EntityLoreInHandEvent extends Event implements Cancellable {
         this.itemInHand = itemInHand;
         this.damage = damage;
         this.parent = parent;
-        Bukkit.getPluginManager().callEvent(this);
+
     }
 
     public static HandlerList getHandlerList() {

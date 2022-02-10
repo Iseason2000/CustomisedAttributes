@@ -1,5 +1,6 @@
 package top.iseason.customisedattributes.Listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
@@ -40,6 +41,6 @@ public class EventListener implements Listener {
         for (String s : itemMeta.getLore()) {
             lore.add(ColorTranslator.noColor(s));
         }
-        new EntityLoreInHandEvent(damager, event.getEntity(), itemInHand, lore, event.getDamage(), event);
+        Bukkit.getPluginManager().callEvent(new EntityLoreInHandEvent(damager, event.getEntity(), itemInHand, lore, event.getDamage(), event));
     }
 }

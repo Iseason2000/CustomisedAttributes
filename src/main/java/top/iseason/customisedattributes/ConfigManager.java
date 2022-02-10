@@ -9,6 +9,7 @@ import org.bukkit.event.HandlerList;
 import top.iseason.customisedattributes.Command.*;
 import top.iseason.customisedattributes.Listener.*;
 import top.iseason.customisedattributes.Util.HealthModifier;
+import top.iseason.customisedattributes.Util.HealthTimer;
 import top.iseason.customisedattributes.Util.LogSender;
 
 import java.io.File;
@@ -143,11 +144,13 @@ public class ConfigManager {
                 .replaceFirst("\\[data]", "([0-9]+\\.?[0-9]*.*-.*[0-9]+\\.?[0-9]*|[0-9]+\\.?[0-9]*)")
                 .replaceFirst("\\[data]", "([0-9]+\\.?[0-9]*.*-.*[0-9]+\\.?[0-9]*%?|[0-9]+\\.?[0-9]*%?)")
                 .replace("[time]", "(\\d+\\.?/?\\d*)"));
-        HealthListener.RTip = healthConfig.getString("Tip1");
-        HealthListener.RTip2 = healthConfig.getString("Tip2");
-        HealthCommand.Tip = healthConfig.getString("Tip3");
+
+        HealthListener.Tip1 = healthConfig.getString("Tip1");
+        HealthListener.Tip2 = healthConfig.getString("Tip2");
+        HealthListener.Tip3 = healthConfig.getString("Tip3");
+        HealthCommand.Tip = healthConfig.getString("Tip4");
         HealthListener.attackMap = new HashMap<>();
-        HealthModifier.Timer.reset();
+        HealthTimer.reset();
         registerCustomHealth();
     }
 
@@ -265,7 +268,8 @@ public class ConfigManager {
     private static void setArmourPenetrationConfig() {
         ConfigurationSection rangeConfig = config.getConfigurationSection("SunderArmor");
         ArmourPenetrationListener.pattern = Pattern.compile(toPatternString(rangeConfig.getString("KeyWord")));
-        ArmourPenetrationListener.commandTip = rangeConfig.getString("Tip");
+        ArmourPenetrationListener.Tip1 = rangeConfig.getString("Tip1");
+        ArmourPenetrationListener.Tip2 = rangeConfig.getString("Tip2");
         ArmourPenetrationListener.map = new HashMap<>();
         registerArmourPenetration();
     }

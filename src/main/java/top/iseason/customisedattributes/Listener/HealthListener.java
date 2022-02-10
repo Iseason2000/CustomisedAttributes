@@ -15,6 +15,7 @@ import top.iseason.customisedattributes.Events.EntityLoreInHandEvent;
 import top.iseason.customisedattributes.Main;
 import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.HealthModifier;
+import top.iseason.customisedattributes.Util.HealthTimer;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
@@ -24,13 +25,13 @@ import java.util.regex.Pattern;
 
 public class HealthListener implements Listener {
     public static HashMap<UUID, String[]> attackMap;
-    public static String RTip;
-    public static String RTip2;
+    public static String Tip1;
+    public static String Tip2;
+    public static String Tip3;
     public static Pattern pattern;
-    private static HealthModifier.HandItemTimer timer;
 
     public HealthListener() {
-        timer = new HealthModifier.HandItemTimer();
+        HealthModifier.HandItemTimer timer = new HealthModifier.HandItemTimer();
         timer.runTaskTimerAsynchronously(Main.getInstance(), 0L, 10L);
     }
 
@@ -47,7 +48,7 @@ public class HealthListener implements Listener {
                 //不是百分比
                 chance = PercentageGetter.formatString(matcher.group(1));
                 String heal = matcher.group(2);
-                health = String.format("%.2f", PercentageGetter.formatString(heal.replace("%", "")));
+                health = String.format("%.0f", PercentageGetter.formatString(heal.replace("%", "")));
                 if (heal.contains("%")) health = health.concat("%");
                 time = String.valueOf((int) (HealthModifier.toDouble(matcher.group(3)) * 20));
                 time2 = matcher.group(3);
@@ -63,8 +64,8 @@ public class HealthListener implements Listener {
         LivingEntity attacker = event.getAttacker();
         UUID uniqueId = attacker.getUniqueId();
         if (attacker instanceof Player) {
-            if (RTip2 != null && !RTip.isEmpty()) {
-                ((Player) attacker).sendMessage(ColorTranslator.toColor(RTip2.replace("[data]", health).replace("[time]", time2)));
+            if (Tip3 != null && !Tip3.isEmpty()) {
+                ((Player) attacker).sendMessage(ColorTranslator.toColor(Tip3.replace("[data]", health).replace("[time]", time2)));
             }
         }
         attackMap.put(uniqueId, strings);
@@ -82,10 +83,10 @@ public class HealthListener implements Listener {
         String[] strings = attackMap.get(uniqueId);
         String health = strings[0];
         int tick = HealthModifier.toInt(strings[1]);
-        new HealthModifier.Timer(entity, "-".concat(health), tick).start();
+        new HealthTimer(entity, "-".concat(health), tick).start();
         if (entity instanceof Player) {
-            if (RTip != null && !RTip.isEmpty()) {
-                ((Player) entity).sendMessage(ColorTranslator.toColor(RTip.replace("[data]", health).replace("[time]", String.valueOf(tick / 20.0))));
+            if (Tip1 != null && !Tip1.isEmpty()) {
+                ((Player) entity).sendMessage(ColorTranslator.toColor(Tip1.replace("[data]", health).replace("[time]", String.valueOf(tick / 20.0))));
             }
         }
         attackMap.remove(uniqueId);
@@ -94,7 +95,7 @@ public class HealthListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        HealthModifier.Timer.remove(player);
+        HealthTimer.remove(player.getUniqueId());
         HealthModifier.HandItemTimer.remove(player);
     }
 
@@ -103,7 +104,7 @@ public class HealthListener implements Listener {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            HealthModifier.Timer.remove(player);
+            HealthTimer.remove(player.getUniqueId());
             HealthModifier.HandItemTimer.remove(player);
         }
     }
@@ -113,7 +114,7 @@ public class HealthListener implements Listener {
     public void onGetStatsBonusEvent(GetStatsBonusEvent event) {
         if (event.getStatsEnum() != StatsEnum.HEALTH) return;
         LivingEntity entity = event.getEntity();
-        HealthModifier.Timer timer = HealthModifier.Timer.modifierMap.get(entity.getUniqueId());
+        HealthTimer timer = HealthTimer.modifierMap.get(entity.getUniqueId());
         if (timer != null) {
             event.setValue(event.getValue() + timer.num);
         }

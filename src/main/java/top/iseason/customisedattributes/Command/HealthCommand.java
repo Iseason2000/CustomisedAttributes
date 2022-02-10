@@ -6,9 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import top.iseason.customisedattributes.Listener.HealthListener;
-import top.iseason.customisedattributes.Util.Binder;
-import top.iseason.customisedattributes.Util.ColorTranslator;
-import top.iseason.customisedattributes.Util.HealthModifier;
+import top.iseason.customisedattributes.Util.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +39,8 @@ public class HealthCommand implements CommandExecutor, TabExecutor {
             case "addMaxHealth":
                 if (args.length != 3) return;
                 String arg2 = args[1];
-                new HealthModifier.Timer(player, arg2, HealthModifier.toInt(args[2])).start();
+                int time = (int) PercentageGetter.formatString(args[2]);
+                new HealthTimer(player, arg2, time).start();
                 break;
             case "reduceMaxHealth":
                 if (args.length != 3) return;

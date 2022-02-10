@@ -2,6 +2,7 @@ package top.iseason.customisedattributes.Listener;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,6 +15,7 @@ import top.iseason.customisedattributes.ConfigManager;
 import top.iseason.customisedattributes.Events.EntityLoreInHandEvent;
 import top.iseason.customisedattributes.Main;
 import top.iseason.customisedattributes.Util.Binder;
+import top.iseason.customisedattributes.Util.ColorTranslator;
 import top.iseason.customisedattributes.Util.PercentageGetter;
 
 import java.util.HashMap;
@@ -23,7 +25,8 @@ import java.util.regex.Pattern;
 
 public class ArmourPenetrationListener implements Listener {
     public static Pattern pattern;
-    public static String commandTip;
+    public static String Tip1;
+    public static String Tip2;
     public static HashMap<UUID, Double> map;
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -78,5 +81,8 @@ public class ArmourPenetrationListener implements Listener {
             return;
         }
         event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, 0);
+        if (damager instanceof Player && Tip2 != null && !Tip2.isEmpty()) {
+            ((Player) damager).sendMessage(ColorTranslator.toColor(Tip2));
+        }
     }
 }

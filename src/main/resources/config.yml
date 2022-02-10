@@ -68,8 +68,10 @@ HealthModify:
   KeyWord1: "手持物品提升[data]额外生命上限"
   KeyWord2: "攻击有[data]%的几率降低目标[data]的血量上限,持续[time]秒"
   Tip1: "&b你的生命上限被减少了[data],持续[time]秒"
-  Tip2: "&b你的攻击使目标生命上限被减少了[data],持续[time]秒"
-  Tip3: "&b你的下次攻击将减少目标生命上限[data],持续[time]秒"
+  Tip2: "&b你的生命上限增加了[data],持续[time]秒"
+  Tip3: "&b你的攻击使目标生命上限被减少了[data],持续[time]秒"
+  Tip4: "&b你的攻击将减少目标生命上限[data],持续[time]秒"
+
 
 
 # 范围攻击
@@ -89,7 +91,8 @@ Bleed:
 SunderArmor:
   Switch: true
   KeyWord: "攻击有[data]%的几率无视目标护甲值"
-  Tip: "&b你的攻击在[time]秒内有[data]%的几率将无视目标护甲"
+  Tip1: "&b你的攻击在[time]秒内有[data]%的几率将无视目标护甲"
+  Tip2: "&b你的攻击无视了目标的护甲"
 
 # 回血
 Heal:

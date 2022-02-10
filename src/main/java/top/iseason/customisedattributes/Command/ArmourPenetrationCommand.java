@@ -40,6 +40,6 @@ public class ArmourPenetrationCommand implements CommandExecutor {
             }
         }.runTaskLaterAsynchronously(Main.getInstance(), new Double(second * 20).longValue());
         Binder.bind(player, player.getItemInHand());
-        player.sendMessage(ColorTranslator.toColor(ArmourPenetrationListener.commandTip.replace("[time]", String.valueOf(second)).replace("[data]", String.format("%.0f", percent))));
+        player.sendMessage(ColorTranslator.toColor(ArmourPenetrationListener.Tip1.replace("[time]", String.valueOf(second)).replace("[data]", String.format("%.0f", percent))));
     }
 }

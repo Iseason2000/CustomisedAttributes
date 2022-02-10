@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.customisedattributes.Command.ReloadCommand;
-import top.iseason.customisedattributes.Util.HealthModifier;
+import top.iseason.customisedattributes.Util.HealthTimer;
 import top.iseason.customisedattributes.Util.LogSender;
 
 public final class Main extends JavaPlugin {
@@ -22,7 +22,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         saveDefaultConfig();
-        HealthModifier.Timer.reset();
+        HealthTimer.reset();
         LogSender.sendLog(ChatColor.RED + "插件已注销!");
     }
 
