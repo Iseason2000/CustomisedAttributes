@@ -1,6 +1,6 @@
 name: CustomisedAttributes
 main: top.iseason.customisedattributes.Main
-version: 1.5.6
+version: 1.5.9
 commands:
   CustomisedAttributes:
     aliases: [ ca ]

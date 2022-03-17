@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'top.iseason'
-version '1.5.6'
+version '1.5.9'
 
 repositories {
     mavenCentral()

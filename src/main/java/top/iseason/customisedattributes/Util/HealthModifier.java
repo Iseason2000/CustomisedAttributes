@@ -108,7 +108,6 @@ public class HealthModifier {
                             return;
                         }
                     }
-                    return;
                 }
                 if (playerMap.containsKey(uniqueId)) {
                     remove(player);

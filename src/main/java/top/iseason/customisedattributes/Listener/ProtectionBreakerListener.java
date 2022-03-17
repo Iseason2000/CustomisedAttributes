@@ -61,7 +61,7 @@ public class ProtectionBreakerListener implements Listener {
         }
 
         UUID uniqueId = damager.getUniqueId();
-        if (pbList.containsKey(uniqueId) && Binder.contains(damager)) {
+        if (pbList.containsKey(uniqueId) && Binder.checkBind(damager, itemInHand)) {
             percentage = pbList.get(uniqueId);
             if (percentage < 0) {
                 pbList.remove(uniqueId);

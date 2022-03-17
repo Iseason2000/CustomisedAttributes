@@ -1,9 +1,6 @@
 package top.iseason.customisedattributes.Listener;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -94,7 +91,8 @@ public class PercentageDamageListener implements Listener {
         if (target instanceof Player && percentage >= playerMaxP) {
             percentage = playerMaxP;
         }
-        double maxHealth = ((LivingEntity) target).getMaxHealth();
+        if (!(target instanceof Damageable)) return;
+        double maxHealth = ((Damageable) target).getMaxHealth();
         double realDamage = maxHealth * percentage / 100.0D;
         e.setDamage(EntityDamageEvent.DamageModifier.MAGIC, realDamage + e.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
         if (damager instanceof Player && PDTip != null && !PDTip.isEmpty()) {
