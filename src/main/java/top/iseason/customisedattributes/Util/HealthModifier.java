@@ -2,7 +2,6 @@ package top.iseason.customisedattributes.Util;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import top.iseason.customisedattributes.Main;
 
@@ -68,49 +67,42 @@ public class HealthModifier {
             Collection<? extends Player> onlinePlayers = Main.getInstance().getServer().getOnlinePlayers();
             onlinePlayers.forEach(player -> {
                 ItemStack itemInHand = player.getItemInHand();
-                boolean hasLore = false;
-                if (itemInHand != null) {
-                    if (itemInHand.hasItemMeta()) {
-                        ItemMeta itemMeta = itemInHand.getItemMeta();
-                        hasLore = itemMeta.hasLore();
-                    }
-                }
                 UUID uniqueId = player.getUniqueId();
-                if (hasLore) {
-                    List<String> loreList = itemInHand.getItemMeta().getLore();
-                    for (String lore : loreList) {
-                        Matcher matcher = lorePattern.matcher(ColorTranslator.noColor(lore));
-                        if (matcher.find()) {
-                            String group = matcher.group(1);
-                            String str = lastString.get(uniqueId);
-                            if (str != null && str.equals(group)) {
-                                continue;
-                            } else {
-                                Double aDouble = playerMap.get(uniqueId);
-                                if (str != null && aDouble != null) {
-                                    double v = player.getMaxHealth() - aDouble;
-                                    if (player.getHealth() > v) player.setHealth(v);
-                                    player.setMaxHealth(v);
-                                }
-                            }
-                            double num;
-                            if (group.contains("%")) {
-                                String replace = group.replace("%", "");
-                                num = HealthModifier.toDouble(replace) / 100.0 * player.getMaxHealth();
-                            } else {
-                                num = HealthModifier.toDouble(group);
-                            }
-                            double v = player.getMaxHealth() + num;
-                            if (player.getHealth() > v) player.setHealth(v);
-                            player.setMaxHealth(v);
-                            playerMap.put(uniqueId, num);
-                            lastString.put(uniqueId, group);
-                            return;
-                        }
+                //无有效物品在手
+                if (itemInHand == null || !itemInHand.hasItemMeta() || !itemInHand.getItemMeta().hasLore()) {
+                    if (playerMap.containsKey(uniqueId)) {
+                        remove(player);
                     }
+                    return;
                 }
-                if (playerMap.containsKey(uniqueId)) {
-                    remove(player);
+                List<String> loreList = itemInHand.getItemMeta().getLore();
+                for (String lore : loreList) {
+                    Matcher matcher = lorePattern.matcher(ColorTranslator.noColor(lore));
+                    if (!matcher.find()) {
+                        continue;
+                    }
+                    String group = matcher.group(1);
+                    String str = lastString.get(uniqueId);
+                    //之前存在且效果一样
+                    if (group.equals(str)) {
+                        return;
+                    } else {
+                        remove(player);
+                    }
+                    //解析
+                    double num;
+                    if (group.contains("%")) {
+                        String replace = group.replace("%", "");
+                        num = HealthModifier.toDouble(replace) / 100.0 * player.getMaxHealth();
+                    } else {
+                        num = HealthModifier.toDouble(group);
+                    }
+                    double v = player.getMaxHealth() + num;
+                    if (player.getHealth() > v) player.setHealth(v);
+                    player.setMaxHealth(v);
+                    playerMap.put(uniqueId, num);
+                    lastString.put(uniqueId, group);
+                    break;
                 }
             });
         }

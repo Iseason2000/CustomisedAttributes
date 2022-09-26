@@ -1,8 +1,9 @@
 package top.iseason.customisedattributes.Listener;
 
-import org.bukkit.Material;
+import Test.LoreAttributes;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -43,15 +44,29 @@ public class PercentageProtectionListener implements Listener {
         LivingEntity livingEntity = (LivingEntity) entity;
         ItemStack[] eq = livingEntity.getEquipment().getArmorContents();
         List<ItemStack> eqItem = new ArrayList<>(Arrays.asList(eq));
-        ItemStack itemInHand = livingEntity.getEquipment().getItemInHand();
-        if (itemInHand == null) return;
-        eqItem.add(itemInHand);
+        if (livingEntity instanceof Player) {
+            Player player = (Player) livingEntity;
+            List<Integer> artifactslots = LoreAttributes.config.getIntegerList("artifactslots");
+            String artifactkeyword = LoreAttributes.config.getString("artifactkeyword");
+            for (Integer artifactslot : artifactslots) {
+                ItemStack item = player.getInventory().getItem(artifactslot);
+                if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore()) continue;
+                List<String> lore = item.getItemMeta().getLore();
+                for (String s : lore) {
+                    if (s.contains(artifactkeyword)) {
+                        eqItem.add(item);
+                        break;
+                    }
+                }
+            }
+        }
+        eqItem.add(livingEntity.getEquipment().getItemInHand());
         double percentage = 0.0;
         for (ItemStack item : eqItem) {
             if (item == null) {
                 continue;
             }
-            if (item.getType() == Material.AIR) {
+            if (!item.hasItemMeta()) {
                 continue;
             }
             if (!item.getItemMeta().hasLore()) {
